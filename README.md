@@ -1,6 +1,6 @@
-# Get/A\Geek
+# NullyLand
 
-IT Tech Automation System
+Geek How-To's
 
 ## Project setup
 
