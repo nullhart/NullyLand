@@ -1,82 +1,181 @@
 <template>
-  <v-layout>
-    <v-flex xs22 style=" overflow-y: scroll;">
-      <v-toolbar dense>
 
-        <v-toolbar-title>Editor</v-toolbar-title>
+  <div class="noClick">
+    <v-snackbar v-model="notificationStatus" :close="false" :color="notificationType == 'success' ? 'green' : 'red' " :right="true" :timeout="0" :top="true">
+      {{ notification }}
+      <v-btn color="pink" flat @click="snackbar = false">
+        Close
+      </v-btn>
+    </v-snackbar>
+    <v-tooltip left class="AllowClick">
+      <v-btn slot="activator" @click="dialog = !dialog" class="text-xs-center mb-4" fixed right bottom fab dark large color="orange lighten-1">
+        <v-icon dark>mdi-plus</v-icon>
+      </v-btn>
+      <span>Add Element</span>
+    </v-tooltip>
 
-        <v-spacer></v-spacer>
-        <v-btn @click="newCard">new Card</v-btn>
+    <v-layout row justify-center>
+      <v-dialog v-model="dialog" persistent max-width="500px">
+        <v-card class="AllowClick">
+          <v-card-title>
+            <span class="headline black--text">Add/Edit Post Element</span>
+          </v-card-title>
+          <v-card-text>
+            <v-container grid-list-md>
+              <v-layout wrap>
+                <v-flex xs12>
+                  <v-select solo v-model="newItemType" :items="postElementTypes" item-text="title" item-value="value" return-object label="Element Type" required></v-select>
+                </v-flex>
+                <v-flex xs12>
+                  <v-text-field solo v-model="newItemTitle" label="Element Title"></v-text-field>
+                </v-flex>
+                <v-flex xs12>
+                  <v-textarea v-model="newItemDescription" solo label="Element Description"></v-textarea>
+                </v-flex>
+                <v-flex xs12>
+                  <v-text-field solo v-model="newItemUrl" label="Element Url"></v-text-field>
+                </v-flex>
+                <v-flex xs12>
+                  <v-text-field solo v-model="newItemCode" label="Element Code"></v-text-field>
+                </v-flex>
 
-      </v-toolbar>
+                <v-flex xs12>
+                  <label for="image">Element Image</label>
+                  <v-divider class="mb-1 mt-2"></v-divider>
 
-      <h1 class="text-xs-center" editable>{{$store.state.applicationData.post.title}}</h1>
-      <v-container align-content-center>
-        <div v-for="(things, i) in $store.state.applicationData.post.content" :key="'base'+i">
-          <v-card class="elevation-3">
-            <v-card-text class="cyan elevation-0 white--text mb-0">
-              <h3 class="headline font-weight-bold mb-0 text-xs-center">{{things.title}}</h3>
-            </v-card-text>
-            <transition name="fade">
-              <v-card-media><img v-on:onload="log" :src="things.image" :height="imageHeight"></v-card-media>
-            </transition>
-            <div v-for="(step, index) in things" :key="'Step:'+index">
-              <dynamic-sub-step :data="step" />
-            </div>
-          </v-card>
-        </div>
+                  <v-responsive class="elevation-3">
+                    <transition name="fade">
+                      <v-img :src="newItemImage" v-model="newItemImage"> <input style="width: 435px; height: 250px; highlight: none; opacity: 0;" @change="onChange($event)" type="file" accept="image/*" id="image"></v-img>
+                    </transition>
+                  </v-responsive>
+                  {{postInfo}}
 
-      </v-container>
-      <div></div>
-      <div></div>
-    </v-flex>
-  </v-layout>
+                </v-flex>
+
+              </v-layout>
+            </v-container>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="blue darken-1" flat @click.native="dialog = false">Close</v-btn>
+            <v-btn color="blue darken-1" flat @click.native="addNewItem">Save</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+    </v-layout>
+    <v-toolbar class="AllowClick">
+      <v-btn color="green darken-1 white--text" @click.native="publishArticle">Publish Article</v-btn>
+    </v-toolbar>
+    <v-container>
+      <v-btn class="red AllowClick" @click="notificationController('Success', 'success')"></v-btn>
+      <v-btn class="red AllowClick" @click="notificationController('test error','error')"></v-btn>
+
+      <div class="text-xs-center  font-weight-bold display-2">{{$store.state.applicationData.post.title}}</div>
+      <v-divider class="ma-2"></v-divider>
+      <div v-for="(things, i) in $store.state.applicationData.post.content" :key="i" style="perspective: 600px;">
+        <transition name="stagger">
+          <dynamic-sub-step style="margin: auto;" :data="things" class="AllowClick" :style="'animation-delay: ' + 300 * i + 'ms !important; will-change: auto; '" v-show="test " />
+        </transition>
+      </div>
+    </v-container>
+  </div>
 </template>
 
 <script>
-import FadeinImage from "../components/FadeInImage";
 import DynamicSubStep from "../components/DynamicSubStep";
+import firebase from "firebase/app";
+import "firebase/auth";
+import "firebase/storage";
+import db from "../helpers/firebaseInit";
+
+const articlesRef = db.collection("articles");
 
 export default {
   name: "PostCreator",
-  components: { FadeinImage, DynamicSubStep },
+  components: { DynamicSubStep },
   data() {
     return {
       mounted: false,
-      imageLoaded: false
+      imageLoaded: false,
+      notificationStatus: false,
+      notification: "",
+      notificationType: "",
+      test: false,
+      articleTitle: "test",
+      articleDescription: "test",
+      newItemType: {},
+      newItemTitle: "",
+      newItemDescription: "",
+      newItemUrl: "",
+      newItemImage: `https://via.placeholder.com/350x200`,
+      newItemCode: ``,
+
+      newPost: [],
+      dialog: false,
+      postElementTypes: [
+        { value: "snippit", title: "Code Snippit" },
+        { value: "card", title: "Card" },
+        { value: "list", title: "List" },
+        { value: "yt", title: "YouTube" }
+      ],
+      postDetails: {}
     };
   },
+  mounted() {
+    this.test = true;
+    console.log(this.$store.creator);
+  },
   computed: {
-    imageHeight: function() {
-      if (this.$vuetify.breakpoint.sm) {
-        return "410px";
-      } else if (this.$vuetify.breakpoint.xs) {
-        return "175px";
-      } else if (this.$vuetify.breakpoint.md) {
-        return "500px";
-      } else {
-        return "500px";
-      }
+    postInfo: function() {
+      return this.newPost;
     }
   },
-
   methods: {
-    log: function() {
-      console.log("test");
-      this.imageLoaded = true;
-      return null;
+    wait: function timeout(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
     },
-    imageLoadedUpdate() {
-      this.imageLoaded = true;
+    addNewItem: function() {
+      let newElement = {
+        type: this.newItemType.value,
+        title: this.newItemTitle,
+        text: this.newItemDescription,
+        image: this.newItemImage
+      };
+      this.newPost.push(newElement);
+      console.log();
+    },
+    notificationController: async function(notificationMessage, type) {
+      console.log(notificationMessage);
+      if (this.notification != "") {
+        await this.wait(2000);
+        this.notificationController(notificationMessage);
+      } else {
+        this.notificationType = type;
+        this.notification = notificationMessage;
+        this.notificationStatus = true;
+        await this.wait(3000);
+        this.notificationStatus = false;
+        this.notification = "";
+      }
     },
 
-    newCard: function() {
-      this.$store.state.applicationData.post.content.push({
-        type: "card",
-        title: "Example Header",
-        text: "Example body text",
-        image: "https://picsum.photos/900/500"
-      });
+    publishArticle: function() {
+      let articleObj = {
+        title: this.articleTitle,
+        description: this.articleDescription,
+        dateCreated: new Date(),
+        content: JSON.parse(JSON.stringify(this.newPost))
+      };
+      console.log(articleObj);
+      articlesRef
+        .add(articleObj)
+        .then(result => {
+          console.log("Post Published");
+          this.notificationController("Article Published!", "success");
+        })
+        .catch(err => {
+          console.log(err);
+        });
     },
     Async_Upload: inputFile => {
       const temporaryFileReader = new FileReader();
@@ -105,15 +204,39 @@ export default {
         console.log("size-exceeded", size);
         return;
       }
-
       this.Async_Upload(file).then(data => {
-        this.post.content.cards[0].image = data;
-        this.file_changed = true;
+        console.log(typeof data);
+        this.newItemImage = data;
       });
     }
   }
 };
 </script>
 
-<style scoped>
+<style >
+@keyframes rotateWobble {
+  0% {
+    transform: rotateX(120deg);
+    opacity: 0;
+  }
+
+  50% {
+    transform: rotateX(-20deg);
+  }
+  100% {
+    transform: rotateX(0deg);
+    opacity: 1;
+  }
+}
+
+.stagger-leave {
+  animation-name: rotateWobble reverse;
+  animation-duration: 1s;
+}
+
+.stagger-enter-to {
+  transform: rotateX(90deg);
+  animation-name: rotateWobble;
+  animation-duration: 1s;
+}
 </style>
