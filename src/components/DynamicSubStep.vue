@@ -1,35 +1,31 @@
 
 
 <template>
-    <div>
-        {{data.steps}}
-        <div v-for="(thing, index) in data" :key="'Dynamic'+index">
-            <div class="ma-3" v-show="thing.type == 'card'">
-                <card :data="thing" />
-            </div>
+  <div style="max-width: 800px;">
 
-            <div class="ma-3" v-show="thing.type == 'fiddle'">
-                <fiddle :data="thing" />
-            </div>
+    <card class="mb-3" v-show="data.type == 'card'" :data="data" />
+    <snippit class="mb-3" v-show="data.type == 'snippit'" :data="data" />
+    <list class="mb-3" v-show="data.type == 'list'" :data="data" />
+    <yt class="mb-3" v-show="data.type == 'yt'" :data="data" />
 
-            <list v-show="thing.type == 'list'" />
-        </div>
-    </div>
+  </div>
 </template>
 
 <script>
 //smaller components
 import card from "./Card";
 import list from "./List";
-import fiddle from "./Fiddle";
+import snippit from "./Snippit";
+import yt from "./YT";
 
 export default {
   name: "DynamicSubStep",
-  components: { card, list, fiddle },
+  components: { card, list, snippit, yt },
   props: ["data"],
   data: function() {
     return {};
   },
+
   mounted: function() {}
 };
 </script>
