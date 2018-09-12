@@ -1,18 +1,23 @@
 
 
 <template>
-
-  <v-card class="elevation-3">
-    <v-card-text class="cyan elevation-0 white--text mb-0">
-      <h3 class="headline font-weight-bold mb-0 text-xs-center">{{data.title}}</h3>
+  <v-card class="elevation-3 post-image" style="margin-left:auto;margin-right:auto;">
+    <v-card-text class="orange  elevation-0 white--text mb-0">
+      <p class="title font-weight-bold mb-0 text-xs-center">{{data.title}}</p>
     </v-card-text>
-    <transition name="fade">
-      <v-card-media><img v-on:onload="log" :src="data.image" :height="imageHeight"></v-card-media>
-    </transition>
+
+    <v-responsive class="orange">
+      <!-- <img @load="log" :src="data.image"> -->
+      <v-img transition="imageFade" :aspect-ratio="16/9" :src="'https://picsum.photos/600/400?random' + Math.random()">
+        <v-layout slot="placeholder" fill-height align-center justify-center ma-0>
+          <v-progress-circular :size="49" :width="6" indeterminate color="yellow"></v-progress-circular>
+        </v-layout>
+      </v-img>
+
+    </v-responsive>
 
   </v-card>
 </template>
-
 
 <script>
 import list from "./List";
@@ -28,12 +33,13 @@ export default {
       imageLoaded: false
     };
   },
+
   computed: {
     imageHeight: function() {
-      if (this.$vuetify.breakpoint.sm) {
-        return "410px";
-      } else if (this.$vuetify.breakpoint.xs) {
+      if (this.$vuetify.breakpoint.xs) {
         return "175px";
+      } else if (this.$vuetify.breakpoint.sm) {
+        return "410px";
       } else if (this.$vuetify.breakpoint.md) {
         return "500px";
       } else {
@@ -41,6 +47,7 @@ export default {
       }
     }
   },
+
   methods: {
     log: function() {
       console.log("test");
@@ -55,5 +62,20 @@ export default {
 };
 </script>
 
-<style scoped>
+<style >
+.imageFade-enter-active {
+  transition: opacity 1s ease-in-out;
+}
+.imageFade-enter-to {
+  opacity: 1;
+}
+.imageFade-enter {
+  opacity: 0;
+}
+.post-image {
+  height: 100%;
+  max-height: 600px;
+  max-width: 800px;
+  align-content: center;
+}
 </style>
