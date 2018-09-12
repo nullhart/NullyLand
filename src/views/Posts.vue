@@ -1,12 +1,18 @@
 <template>
 
-  <v-container v-show="mounted" fluid grid-list-md>
+  <v-container class="noClick" v-show="mounted" fluid grid-list-md>
     <v-layout wrap>
       <v-flex v-for="(post, index) in posts" xs12 sm6 md4 xl4 :key="index" v-bind:data-index="index" @click="$router.push('/Post')">
-        <v-card class="minny">
-          <v-card-media height="200px" width="300px">
-            <fade-in-image class="fade-in-image " :imageSrc="'https://picsum.photos/200/300?random' + Math.random()" />
-          </v-card-media>
+        <v-card class="minny AllowClick" style="margin-left:auto;margin-right:auto;">
+          <v-responsive>
+
+            <v-img :aspect-ratio="16/9" class="orange" transition="imageFade" :src="'https://picsum.photos/600/400?random' + Math.random()">
+              <v-layout slot="placeholder" fill-height align-center justify-center ma-0>
+                <v-progress-circular class="" indeterminate color="yellow"></v-progress-circular>
+              </v-layout>
+            </v-img>
+
+          </v-responsive>
           <v-card-title primary-title>
             <div>
               <div class="headline">{{post.title}}</div>
@@ -32,12 +38,9 @@
 
 </template>
 <script>
-import FadeInImage from "@/components/FadeInImage.vue";
 export default {
   name: "Posts",
-  components: {
-    FadeInImage
-  },
+  components: {},
   data() {
     return {
       posts: [
@@ -81,22 +84,6 @@ export default {
     });
   },
   methods: {
-    beforeEnter: function(el) {
-      el.style.opacity = 0;
-      el.style.height = 0;
-    },
-    enter: function(el, done) {
-      var delay = el.dataset.index * 150;
-      setTimeout(function() {
-        Velocity(el, { opacity: 1, height: "1.6em" }, { complete: done });
-      }, delay);
-    },
-    leave: function(el, done) {
-      var delay = el.dataset.index * 150;
-      setTimeout(function() {
-        Velocity(el, { opacity: 0, height: 0 }, { complete: done });
-      }, delay);
-    },
     trimed: function(string, max) {
       return string.substring(0, max) + "...";
     },
@@ -107,7 +94,19 @@ export default {
 };
 </script>
 
-<style scoped>
+<style >
+.imageFade-enter-active {
+  transition: opacity 1s ease-in-out;
+}
+.imageFade-enter-to {
+  opacity: 1;
+}
+.imageFade-enter {
+  opacity: 0;
+}
+.imageFade-move {
+  transition: 1s ease-in-out;
+}
 .minny {
   max-width: 400px;
   min-width: 320px;
@@ -118,16 +117,5 @@ export default {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-}
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.5s;
-}
-.fade-enter,
-.fade-leave-to {
-  opacity: 0;
-}
-.fade-move {
-  transition: opacity 2s;
 }
 </style>
