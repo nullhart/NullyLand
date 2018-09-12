@@ -2,8 +2,7 @@
   <v-app light>
     <!-- Drawer -->
 
-    <v-navigation-drawer width="200" :permanent="!mobile" v-model="$store.state.applicationState.drawer" class=" elevation-0" light fixed clipped app>
-
+    <v-navigation-drawer class="hide-overflow" width="200" :permanent="!mobile" v-model="$store.state.applicationState.drawer" light fixed clipped app>
       <div class="triangle-up elevation-10"></div>
       <v-card height="240" flat>
         <v-avatar class="center" size="100" style="z-index: 1;">
@@ -13,8 +12,8 @@
 
         </v-avatar>
       </v-card>
-      <v-divider></v-divider>
-      <v-list>
+      <v-divider style="position: relative; top: -400px;"></v-divider>
+      <v-list style="position: relative; top: -400px;">
         <v-list-tile :ripple="{class: 'orange--text'}" v-for="item in things" :key="item.title" @click="$router.push(item.action)">
           <v-list-tile-action>
             <v-icon>{{ item.icon }}</v-icon>
@@ -28,8 +27,8 @@
       </v-list>
     </v-navigation-drawer>
     <!--ToolBar -->
-    <v-toolbar class="navGradient  " dark fixed flat clipped-left app>
-      <v-toolbar-side-icon @click="$store.state.applicationState.drawer = !$store.state.applicationState.drawer"></v-toolbar-side-icon>
+    <v-toolbar class="navGradient elevation-0" dark fixed clipped-left app>
+      <v-toolbar-side-icon @click.stop="$store.state.applicationState.drawer = !$store.state.applicationState.drawer"></v-toolbar-side-icon>
       <transition name="fade">
         <img @click="$router.push('/')" v-on:load="logoLoadedUpdate" v-show="logoLoaded" style="cursor: pointer;" width="200" src="./assets/ss.png">
       </transition>
@@ -53,49 +52,63 @@
 
     </v-toolbar>
     <!--Router-View -->
+
     <v-content>
 
+      <vue-particles class="particles" key="part" color="#fe5f55" :particleOpacity="0.7" linesColor="#FFAB91" :particlesNumber="80" shapeType="circle" :particleSize="5" :linesWidth="2" :lineLinked="true" :lineOpacity="0.4" :linesDistance="150" :moveSpeed="3" :hoverEffect="true" hoverMode="grab" :clickEffect="true" clickMode="push">
+      </vue-particles>
       <transition name="fade" mode="out-in">
-        <router-view></router-view>
+        <router-view style="position: relative; top: 0px;" key="router"></router-view>
+
       </transition>
 
     </v-content>
     <!--Footer -->
-    <v-footer app></v-footer>
-
+    <v-footer class="text-xs-center" app>
+      <span class="ma-2 caption ">Created with ❤️ by Blake Mastrud</span>
+      <a style="text-decoration: none;" href="https://github.com/nullhart" target="_blank">
+        <v-icon>mdi-github-box</v-icon>
+      </a>
+    </v-footer>
   </v-app>
 </template>
 <style >
+.particles {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+}
+.noClick {
+  pointer-events: none;
+}
+.AllowClick {
+  pointer-events: all;
+}
 .center {
-  display: block;
   margin-left: auto;
   margin-right: auto;
-  width: 50%;
+  left: 25%;
+  top: -380px;
+}
+.hide-overflow {
+  overflow: hidden;
 }
 
 .triangle-up {
-  position: fixed;
+  position: relative;
   width: 400px;
   background: linear-gradient(0.15turn, #f3d250, #f3d250, #fe5f55, #fe5f55);
   z-index: 1;
   transform: rotate(45deg);
   height: 400px;
+  /*Safari Fix */
+  pointer-events: none;
   top: -265px;
   left: -50%;
 }
 
 .navGradient {
-  background: linear-gradient(
-    0.1turn,
-    #f3d250,
-    #fe5f55,
-    #fe5f55,
-    #fe5f55,
-    #fe5f55,
-    #fe5f55,
-    #fe5f55,
-    #fe5f55
-  );
+  background: linear-gradient(0.1turn, #f3d250 0px, #fe5f55 110px);
 }
 
 .drawerGradient {
@@ -129,11 +142,10 @@ import firebase from "firebase/app";
 import "firebase/auth";
 import db from "./helpers/firebaseInit";
 import router from "./router.js";
-import FadeInImage from "./components/FadeInImage";
 
 export default {
   name: "app",
-  components: { router, FadeInImage },
+  components: { router },
   data() {
     return {
       things: [
@@ -173,7 +185,8 @@ export default {
       currentUser: {},
       newData: [],
       profileImageLoaded: false,
-      logoLoaded: false
+      logoLoaded: false,
+      mounted: false
     };
   },
 
@@ -203,9 +216,7 @@ export default {
   },
   computed: {
     mobile: function() {
-      return this.$vuetify.breakpoint.sm || this.$vuetify.breakpoint.xs
-        ? true
-        : false;
+      return this.$vuetify.breakpoint.width < 1260;
     },
     authenticated: function() {
       return this.$store.state.applicationState.authenticated;
@@ -223,7 +234,10 @@ export default {
     }
   },
 
-  mounted() {}
+  mounted() {
+    this.$vuetify.breakpoint.sm = 1215;
+    this.mounted = true;
+  }
 };
 </script>
 
