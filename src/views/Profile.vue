@@ -1,6 +1,6 @@
 
 <template >
-  <v-container>
+  <v-container class="white mt-5 elevation-3">
     <div v-on:keypress.enter="update($store.state.UserProfile.id, $store.state.UserProfile)">
       <v-snackbar color="green" v-model="notification" multi-line :timeout="2000">
         Profile Updated! 🎉
@@ -10,17 +10,16 @@
       </v-snackbar>
 
       <v-form v-show="$store.state.applicationState.loaded == true">
-        <v-avatar color="blue lighten-4">
+
+        <v-avatar size="150" class="ma-4" color="blue lighten-4">
 
           <img v-show="this.$store.state.UserProfile.profileImage != null || file_changed ==true" :size=23 :src="this.$store.state.UserProfile.profileImage" @click="onChange($event)">
-          <input @input="onChange($event)" placeholder="tst" type="file" name="file" accept="image/*" style="opacity: 0; z-index: 2; width: 60px; height: 60px; position: absolute; left: 0px; top: 0px; cursor: pointer;">
+          <input @input="onChange($event)" placeholder="tst" type="file" name="file" accept="image/*" style="border-radius: 100%;opacity: 0; z-index: 2; width: 150px; height: 150px; position: absolute; left: 0px; top: 0px; cursor: pointer;">
           <div v-show="this.$store.state.UserProfile.profileImage == null">
             <v-icon>mdi-account</v-icon>
-            <input @input="onChange($event)" placeholder="tst" type="file" name="file" accept="image/*" style="opacity: 0; z-index: 2; width: 60px; height: 60px; position: absolute; left: 0px; top: 0px; cursor: pointer;">
           </div>
         </v-avatar>
-        <br>
-        <br>
+
         <v-divider></v-divider>
         <v-text-field v-model="$store.state.UserProfile.name" :counter="20" label="Name"></v-text-field>
         <v-text-field v-model="$store.state.UserProfile.phoneNumber" :counter="10" label="Phone Number"></v-text-field>
