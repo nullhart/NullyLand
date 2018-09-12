@@ -1,9 +1,12 @@
 /* eslint-disable */
-import '@mdi/font/css/materialdesignicons.css';
+import "@mdi/font/css/materialdesignicons.css";
+import 'babel-polyfill';
 import firebase from "firebase/app";
 import "firebase/auth";
 import Vue from "vue";
-import contenteditableDirective from 'vue-contenteditable-directive';
+import contenteditableDirective from "vue-contenteditable-directive";
+import VueParticles from "vue-particles/src/vue-particles/";
+import VueTextareaAutosize from 'vue-textarea-autosize';
 import Vuetify from "vuetify";
 import "vuetify/dist/vuetify.min.css";
 import Vuex from "vuex";
@@ -13,10 +16,11 @@ import router from "./router";
 import store from "./store/store";
 
 
-Vue.use(contenteditableDirective)
+Vue.use(VueParticles)
+Vue.use(VueTextareaAutosize)
+Vue.use(contenteditableDirective);
 
 // Tell Vue.js to use vue-highlightjs
-
 
 Vue.use(Vuetify, {
   theme: {
@@ -30,7 +34,6 @@ Vue.use(Vuetify, {
     success: "#4caf50",
     background1: "#fff"
   },
-
   iconfont: "mdi"
 });
 Vue.use(router);
@@ -43,6 +46,7 @@ firebase.auth().onAuthStateChanged(function (user) {
     app = new Vue({
       router,
       store,
+
       render: h => h(App)
     }).$mount("#app");
   }
