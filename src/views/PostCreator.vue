@@ -1,12 +1,7 @@
 <template>
 
   <div class="noClick">
-    <v-snackbar v-model="notificationStatus" :close="false" :color="notificationType == 'success' ? 'green' : 'red' " :right="true" :timeout="0" :top="true">
-      {{ notification }}
-      <v-btn color="pink" flat @click="snackbar = false">
-        Close
-      </v-btn>
-    </v-snackbar>
+
     <v-tooltip left class="AllowClick">
       <v-btn slot="activator" @click="dialog = !dialog" class="text-xs-center mb-4" fixed right bottom fab dark large color="orange lighten-1">
         <v-icon dark>mdi-plus</v-icon>
@@ -15,13 +10,13 @@
     </v-tooltip>
 
     <v-layout row justify-center>
-      <v-dialog v-model="dialog" persistent max-width="500px">
+      <v-dialog v-model="dialog" persistent max-width="900px">
         <v-card class="AllowClick">
           <v-card-title>
             <span class="headline black--text">Add/Edit Post Element</span>
           </v-card-title>
           <v-card-text>
-            <v-container grid-list-md>
+            <v-container grid-list-sm>
               <v-layout wrap>
                 <v-flex xs12>
                   <v-select solo v-model="newItemType" :items="postElementTypes" item-text="title" item-value="value" return-object label="Element Type" required></v-select>
@@ -35,20 +30,26 @@
                 <v-flex xs12>
                   <v-text-field solo v-model="newItemUrl" label="Element Url"></v-text-field>
                 </v-flex>
-                <v-flex xs12>
-                  <v-text-field solo v-model="newItemCode" label="Element Code"></v-text-field>
-                </v-flex>
+
+                <div v-show="newItemType.value == 'snippit'">
+                  <v-flex xs12>
+                    <v-text-field :auto-grow="true" style="width: 200%;" solo background-color="white" v-model="newItemLanguage" label="Code Snippit Language"></v-text-field>
+                  </v-flex>
+                  <v-flex xs12>
+                    <v-textarea :auto-grow="true" style="width: 200%;" solo background-color="white" v-model="newItemCode" label="Element Code Snippet"></v-textarea>
+                  </v-flex>
+
+                </div>
 
                 <v-flex xs12>
                   <label for="image">Element Image</label>
                   <v-divider class="mb-1 mt-2"></v-divider>
-
-                  <v-responsive class="elevation-3">
+                  <v-responsive class="elevation-3" v-if="newItemType.value == 'card'">
                     <transition name="fade">
                       <v-img :src="newItemImage" v-model="newItemImage"> <input style="width: 435px; height: 250px; highlight: none; opacity: 0;" @change="onChange($event)" type="file" accept="image/*" id="image"></v-img>
                     </transition>
                   </v-responsive>
-                  {{postInfo}}
+                  {{this.$store.state.newPost}}
 
                 </v-flex>
 
@@ -63,21 +64,46 @@
         </v-card>
       </v-dialog>
     </v-layout>
-    <v-toolbar class="AllowClick">
-      <v-btn color="green darken-1 white--text" @click.native="publishArticle">Publish Article</v-btn>
-    </v-toolbar>
-    <v-container>
-      <v-btn class="red AllowClick" @click="notificationController('Success', 'success')"></v-btn>
-      <v-btn class="red AllowClick" @click="notificationController('test error','error')"></v-btn>
+    <div class="AllowClick sideToolbar">
+      <v-btn color="green darken-1 white--text font-weight-bold" icon large @click.native="publishArticle">
+        <v-icon>mdi-earth</v-icon>
+      </v-btn>
+      <v-btn color="yellow darken-1 white--text font-weight-bold" icon large @click.native="saveDraft">
+        <v-icon>save</v-icon>
+      </v-btn>
+    </div>
+    <v-menu v-model="showMenu" :position-x="x" :position-y="y" absolute offset-y>
+      <v-list>
+        <v-list-tile v-for="(item, index) in items" :key="index" @click="deleteElement">
+          <v-list-tile-title>{{ item.title }}</v-list-tile-title>
+        </v-list-tile>
+      </v-list>
+    </v-menu>
+    <v-container @contextmenu="show" style="margin-left: 40px;">
+      <v-card class="elevation-3">
+        <div class="text-xs-center">
+          <h1>Post Info</h1>
 
-      <div class="text-xs-center  font-weight-bold display-2">{{$store.state.applicationData.post.title}}</div>
+          <div class="text-xs-center AllowClick font-weight-bold display-2" contenteditable="true" @input="$store.state.newPost.title = $event.target.childNodes[0].data">{{$store.state.newPost.title}}</div>
+          <div class="text-xs-center AllowClick font-weight-normal display-1" contenteditable="true" @input="$store.state.newPost.description = $event.target.childNodes[0].data">{{$store.state.newPost.description}}</div>
+          <v-flex>
+            <v-select style="padding: 30px;" class="AllowClick" v-model="newItemTags" :items="tags" chips label="Chips" multiple></v-select>
+          </v-flex>
+          <v-flex xs6 style="margin: auto;">
+            <v-img xs2 :src="articleThumbnail" v-model="articleThumbnail"> <input class="AllowClick" style="width: 100%; height: 100%; highlight: none; opacity: 0;" @change="onChange($event)" type="file" accept="image/*" id="image"></v-img>
+          </v-flex>
+        </div>
+      </v-card>
       <v-divider class="ma-2"></v-divider>
-      <div v-for="(things, i) in $store.state.applicationData.post.content" :key="i" style="perspective: 600px;">
-        <transition name="stagger">
-          <dynamic-sub-step style="margin: auto;" :data="things" class="AllowClick" :style="'animation-delay: ' + 300 * i + 'ms !important; will-change: auto; '" v-show="test " />
-        </transition>
+      <div>
+
+        <div @click.right="changeSelectedElement(i)" v-for="(things, i) in $store.state.newPost.content" :key="i" style="perspective: 600px;">
+          <dynamic-sub-step slot="activator" style="margin: auto;" :data="things" class="AllowClick" :style="'animation-delay: ' + 300 * i + 'ms !important; will-change: auto; '" v-show="test " />
+
+        </div>
       </div>
     </v-container>
+
   </div>
 </template>
 
@@ -88,13 +114,28 @@ import "firebase/auth";
 import "firebase/storage";
 import db from "../helpers/firebaseInit";
 
+import imageUploader from "../helpers/imageUploader.js";
+
 const articlesRef = db.collection("articles");
+const articlesCountRef = db.collection("articleCounter").doc("totalArticles");
 
 export default {
   name: "PostCreator",
   components: { DynamicSubStep },
   data() {
     return {
+      showMenu: false,
+      x: 0,
+      y: 0,
+      items: [{ title: "Delete Element", action: "deleteElement" }],
+      tags: [
+        "Javascript",
+        "Raspberry Pi",
+        "Home Automation",
+        "hacker",
+        "Random"
+      ],
+
       mounted: false,
       imageLoaded: false,
       notificationStatus: false,
@@ -106,11 +147,15 @@ export default {
       newItemType: {},
       newItemTitle: "",
       newItemDescription: "",
+      newItemTags: [],
       newItemUrl: "",
       newItemImage: `https://via.placeholder.com/350x200`,
+      newItemImageInfo: {},
       newItemCode: ``,
+      newItemLanguage: "",
+      articleThumbnail: "https://via.placeholder.com/350x200",
 
-      newPost: [],
+      currentSelectedElement: -1,
       dialog: false,
       postElementTypes: [
         { value: "snippit", title: "Code Snippit" },
@@ -123,54 +168,84 @@ export default {
   },
   mounted() {
     this.test = true;
-    console.log(this.$store.creator);
   },
   computed: {
     postInfo: function() {
       return this.newPost;
     }
   },
+
   methods: {
+    show(e) {
+      e.preventDefault();
+      this.showMenu = false;
+      this.x = e.clientX;
+      this.y = e.clientY;
+      this.$nextTick(() => {
+        this.showMenu = true;
+      });
+    },
+
+    changeSelectedElement: function(e) {
+      this.currentSelectedElement = e;
+    },
+    deleteElement: function() {
+      console.log(`Deleting Element at Index: ${this.currentSelectedElement}`);
+      this.$store.state.newPost.content.splice(this.currentSelectedElement, 1);
+    },
     wait: function timeout(ms) {
       return new Promise(resolve => setTimeout(resolve, ms));
     },
     addNewItem: function() {
-      let newElement = {
-        type: this.newItemType.value,
-        title: this.newItemTitle,
-        text: this.newItemDescription,
-        image: this.newItemImage
-      };
-      this.newPost.push(newElement);
-      console.log();
-    },
-    notificationController: async function(notificationMessage, type) {
-      console.log(notificationMessage);
-      if (this.notification != "") {
-        await this.wait(2000);
-        this.notificationController(notificationMessage);
-      } else {
-        this.notificationType = type;
-        this.notification = notificationMessage;
-        this.notificationStatus = true;
-        await this.wait(3000);
-        this.notificationStatus = false;
-        this.notification = "";
+      if (this.newItemType.value == "card") {
+        var newElement = {
+          type: this.newItemType.value,
+          title: this.newItemTitle,
+          text: this.newItemDescription,
+          description: this.newItemDescription,
+          image: this.newItemImageInfo
+        };
+      } else if (this.newItemType.value == "snippit") {
+        var newElement = {
+          type: this.newItemType.value,
+          title: this.newItemTitle,
+          text: this.newItemDescription,
+          description: this.newItemDescription,
+          code: this.newItemCode,
+          language: this.newItemLanguage
+        };
       }
+
+      this.$store.state.newPost.content.push(newElement);
     },
 
     publishArticle: function() {
       let articleObj = {
-        title: this.articleTitle,
-        description: this.articleDescription,
+        title: this.$store.state.newPost.title,
+        description: this.$store.state.newPost.description,
         dateCreated: new Date(),
-        content: JSON.parse(JSON.stringify(this.newPost))
+        dateUpdated: "",
+        thumbnail: this.articleThumbnail,
+
+        content: JSON.parse(JSON.stringify(this.$store.state.newPost)).content
       };
       console.log(articleObj);
       articlesRef
         .add(articleObj)
-        .then(result => {
+        .then(async result => {
           console.log("Post Published");
+          var currentCount = await db
+            .collection("articleCounter")
+            .doc("totalArticles")
+            .get()
+            .then(data => {
+              return data.data().count;
+            });
+          console.log(`Current count is at: ${currentCount}`);
+
+          db.collection("articleCounter")
+            .doc("totalArticles")
+            .set({ count: currentCount + 1 });
           this.notificationController("Article Published!", "success");
         })
         .catch(err => {
@@ -198,15 +273,17 @@ export default {
         return;
       }
       const file = files[0];
-      const size = file.size && file.size / Math.pow(1000, 2);
-      // check file max size
-      if (size > this.maxSize) {
-        console.log("size-exceeded", size);
-        return;
-      }
+
       this.Async_Upload(file).then(data => {
-        console.log(typeof data);
         this.newItemImage = data;
+        imageUploader(data, "images", "testFileName").then(data => {
+          console.log(data);
+
+          this.newItemImageInfo = {
+            downloadUrl: data.downloadUrl,
+            id: data.id
+          };
+        });
       });
     }
   }
@@ -214,6 +291,12 @@ export default {
 </script>
 
 <style >
+.sideToolbar {
+  position: fixed;
+  width: 50px;
+  height: 90%;
+}
+
 @keyframes rotateWobble {
   0% {
     transform: rotateX(120deg);
