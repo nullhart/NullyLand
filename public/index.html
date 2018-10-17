@@ -30,14 +30,44 @@
 <body>
 
   <noscript>
-    <strong>We're sorry but temp doesn't work properly without JavaScript enabled. Please enable it to continue.</strong>
+    <strong>We're sorry but Nullyland doesn't work properly without JavaScript enabled. Please enable it to continue.</strong>
   </noscript>
+
   <div id="app"></div>
   <!-- built files will be auto injected -->
+<script>
+let deferredPrompt;
+if (window.matchMedia('(display-mode: standalone)').matches) {
+  console.log('display-mode is standalone');
+}
+
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  // Prevent Chrome 67 and earlier from automatically showing the prompt
+  e.preventDefault();
+  // Stash the event so it can be triggered later.
+  console.log('before install prompt')
+  deferredPrompt = e;
+
+  
+});
+
+function install() {
+  deferredPrompt.prompt()
+
+}
+
+</script>
 </body>
 <style>
   body::-webkit-scrollbar {
     width: 0em;
+  }
+
+  .installButton {
+    position: fixed;
+    right: 20px;
+    z-index: 40;
   }
 </style>
 

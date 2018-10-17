@@ -1,6 +1,6 @@
 {
-    "name": "nullyland",
-    "short_name": "nullyLand",
+    "name": "Nullyland",
+    "short_name": "NullyLand",
     "icons": [{
             "src": "/android-chrome-192x192.png",
             "sizes": "192x192",

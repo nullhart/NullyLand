@@ -162,6 +162,8 @@ import "firebase/auth";
 import db from "./helpers/firebaseInit";
 import router from "./router.js";
 
+
+
 export default {
   name: "app",
   components: { router },

@@ -14,6 +14,7 @@ import "../node_modules/material-design-icons-iconfont/dist/material-design-icon
 import App from "./App.vue";
 import router from "./router";
 import store from "./store/store";
+import './registerServiceWorker'
 
 
 Vue.use(VueParticles)
