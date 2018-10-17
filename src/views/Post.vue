@@ -1,18 +1,15 @@
 <template>
   <v-container>
+    <div style="text-align: center;" class="display-2 font-weight-bold">{{selectedPost.title}}</div>
 
-    <h1>{{selectedPost.title}}</h1>
-    <v-divider></v-divider>
-
+    <v-divider style="margin: 25px;;"></v-divider>
     <div v-for="(things, i) in selectedPost.content" :key="i" style="perspective: 600px;">
       <transition name="stagger">
         <dynamic-sub-step style="margin: auto;" :data="things" class="AllowClick" :style="'animation-delay: ' + 300 * i + 'ms !important; will-change: auto; '" v-show="mounted" />
       </transition>
     </div>
-
   </v-container>
 </template>
-
 <script>
 import DynamicSubStep from "../components/DynamicSubStep";
 
@@ -25,14 +22,7 @@ export default {
       selectedPost: this.$store.state.applicationData.post
     };
   },
-
-  methods: {
-    compiledMarkdown: function(index) {
-      console.log(index);
-      return marked(this.post.content[index].text, { sanitize: false });
-    }
-  },
-  computed: {},
+  methods: {},
   mounted() {
     this.mounted = true;
   }
