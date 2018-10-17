@@ -2,6 +2,8 @@
 
 Geek How-To's
 
+![](https://thumbs.gfycat.com/SplendidCalmCygnet-size_restricted.gif)
+
 ## Project setup
 
 ```
