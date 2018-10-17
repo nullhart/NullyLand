@@ -1,7 +1,14 @@
 <template>
-  <v-app light>
+  <v-app id="main" light>
     <!-- Drawer -->
+    <!-- <div style="position: absolute; top: 70px; right: 10px; width: 300px; z-index: 1;">
+      <transition name="fade">
+        <v-alert v-show="mounted" :timeout="300" class="elevation-6" key="2" :value="true" type="success">
+          This is a success alert.
+        </v-alert>
+      </transition>
 
+    </div> -->
     <v-navigation-drawer class="hide-overflow" width="200" :permanent="!mobile" v-model="$store.state.applicationState.drawer" light fixed clipped app>
       <div class="triangle-up elevation-10"></div>
       <v-card height="240" flat>
@@ -55,21 +62,29 @@
 
     <v-content>
 
-      <vue-particles class="particles" key="part" color="#fe5f55" :particleOpacity="0.7" linesColor="#FFAB91" :particlesNumber="80" shapeType="circle" :particleSize="5" :linesWidth="2" :lineLinked="true" :lineOpacity="0.4" :linesDistance="150" :moveSpeed="3" :hoverEffect="true" hoverMode="grab" :clickEffect="true" clickMode="push">
+      <vue-particles class="particles" key="part" color="#fe5f55" :particleOpacity="0.7" linesColor="#FFAB91" :particlesNumber="30" shapeType="circle" :particleSize="5" :linesWidth="2" :lineLinked="true" :lineOpacity="0.4" :linesDistance="150" :moveSpeed="3" :hoverEffect="true" hoverMode="grab" :clickEffect="true" clickMode="push">
       </vue-particles>
-      <transition name="fade" mode="out-in">
-        <router-view style="position: relative; top: 0px;" key="router"></router-view>
+      <!-- <transition name="fade" mode="out-in"> -->
+      <router-view style="position: relative; top: 0px;" key="router"></router-view>
 
-      </transition>
+      <!-- </transition> -->
+      <div v-if="this.$route.name == 'posts' " style="display: flex; justify-content: center;">
 
+        <v-btn icon fab class=" white--text more-Button" @click="moreArticles">
+          <v-icon>mdi-arrow-down-bold</v-icon>
+        </v-btn>
+      </div>
     </v-content>
     <!--Footer -->
-    <v-footer class="text-xs-center" app>
-      <span class="ma-2 caption ">Created with ❤️ by Blake Mastrud</span>
+
+    <v-footer app class="text-xs-center">
+      <p class="ma-2 ">Created with ❤️ by Blake Mastrud</p>
       <a style="text-decoration: none;" href="https://github.com/nullhart" target="_blank">
         <v-icon>mdi-github-box</v-icon>
       </a>
+
     </v-footer>
+
   </v-app>
 </template>
 <style >
@@ -78,6 +93,7 @@
   width: 100%;
   height: 100%;
 }
+
 .noClick {
   pointer-events: none;
 }
@@ -92,6 +108,9 @@
 }
 .hide-overflow {
   overflow: hidden;
+}
+.more-Button {
+  background: linear-gradient(0.15turn, #f3d250, #fe5f55);
 }
 
 .triangle-up {
@@ -108,9 +127,19 @@
 }
 
 .navGradient {
+  -webkit-app-region: drag;
   background: linear-gradient(0.1turn, #f3d250 0px, #fe5f55 110px);
 }
-
+.navGradient button {
+  -webkit-app-region: no-drag;
+}
+.generalGradient {
+  background: radial-gradient(
+    farthest-corner at 40px 1px,
+    #f3d250 0%,
+    #fe5f55 100%
+  );
+}
 .drawerGradient {
   background: linear-gradient(
     0.48turn,
@@ -124,16 +153,6 @@
     #fe5f55,
     #fe5f55
   );
-}
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.5s;
-}
-.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
-  opacity: 0;
-}
-.fade-move {
-  transition: opacity 2s;
 }
 </style>
 
@@ -183,17 +202,42 @@ export default {
       ],
 
       currentUser: {},
+      page: 1,
       newData: [],
       profileImageLoaded: false,
       logoLoaded: false,
-      mounted: false
+      mounted: false,
+      references: this.$store.state.lastVisibleEnd
     };
   },
 
   methods: {
+    moreArticles: function() {
+      if (this.$store.state.lastVisibleEnd == undefined) {
+        console.log("no more articles");
+        return;
+      }
+      db.collection("articles")
+        .orderBy("dateCreated")
+        .startAfter(this.$store.state.lastVisibleEnd)
+        .limit(6)
+        .get()
+        .then(nextPosts => {
+          this.$store.state.lastVisibleEnd = nextPosts.docs[5];
+
+          var nextArticles = [];
+          nextPosts.forEach(docs => {
+            this.$store.state.mainPosts.push(docs.data());
+          });
+        })
+        .catch(err => {
+          console.log("err");
+        });
+    },
     logoLoadedUpdate: function() {
       this.logoLoaded = true;
     },
+
     profileImageUpdate: function() {
       this.profileImageLoaded = true;
     },
@@ -237,6 +281,19 @@ export default {
   mounted() {
     this.$vuetify.breakpoint.sm = 1215;
     this.mounted = true;
+    db.collection("articles")
+      .orderBy("dateCreated")
+      .limit(6)
+      .get()
+      .then(documentSnapshots => {
+        // Get the last visible document
+        this.$store.state.lastVisibleEnd = documentSnapshots.docs[6 - 1];
+
+        var articles = [];
+        documentSnapshots.forEach(doc => articles.push(doc.data()));
+        console.log(articles);
+        this.$store.state.mainPosts = articles;
+      });
   }
 };
 </script>
