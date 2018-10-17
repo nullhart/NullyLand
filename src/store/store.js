@@ -1,7 +1,10 @@
 /* eslint-disable */
 import Vue from "vue";
 import Vuex from "vuex";
-import { firebaseAction, firebaseMutations } from "vuexfire";
+import {
+  firebaseAction,
+  firebaseMutations
+} from "vuexfire";
 
 Vue.use(Vuex);
 
@@ -11,7 +14,8 @@ const state = {
     newPost: {
       id: "",
       dateCreated: new Date(),
-      title: "",
+      title: "Title",
+      description: "Description",
       categories: [],
       content: []
     },
@@ -21,8 +25,7 @@ const state = {
       dateCreated: new Date(),
       title: "How to Setup MagicMirror²",
       categories: [],
-      content: [
-        {
+      content: [{
           type: "snippit",
           title: "Snippit Example",
           language: "bash",
@@ -43,8 +46,7 @@ const state = {
         {
           type: "list",
           title: "List Example",
-          content: [
-            {
+          content: [{
               title: "test",
               description: "helo how are you",
               url: "https://google.com"
@@ -66,18 +68,31 @@ const state = {
           title: "Card Example",
           type: "card",
           text: "Some text before steps",
-          image:
-            "https://res.cloudinary.com/nullyland/image/upload/v1535551411/Screen_Shot_2018-08-29_at_8.01.50_AM_vblntt.png"
+          image: {
+            downloadUrl: "https://res.cloudinary.com/nullyland/image/upload/v1535551411/Screen_Shot_2018-08-29_at_8.01.50_AM_vblntt.png"
+          }
         },
 
         {
           title: "Card Example",
           type: "card",
           text: "type `sudo apt update && sudo apt upgrade`",
-          image: "https://picsum.photos/900/500"
+          image: {
+            downloadUrl: "https://picsum.photos/900/500"
+          }
         }
       ]
     }
+  },
+  mainPosts: [],
+  lastVisibleEnd: "",
+  lastVisibleStart: "",
+  newPost: {
+    id: "",
+    title: "Post Title",
+    categories: [],
+    description: "Post Description",
+    content: []
   },
   UserProfile: {},
   applicationState: {
@@ -105,18 +120,27 @@ const mutations = {
 
 const actions = {
   //
-  authUpdate: function({ commit }, state) {
+  authUpdate: function ({
+    commit
+  }, state) {
     commit("ChangeAuthState", state);
   },
 
-  createNewPost: function({ commit, payload }, args) {
+  createNewPost: function ({
+    commit,
+    payload
+  }, args) {
     args.db.doc().set(args.info);
     console.log(args.db);
     console.log(args);
   },
 
   setPostRef: firebaseAction(
-    ({ bindFirebaseRef, unbindFirebaseRef, commit }, ref) => {
+    ({
+      bindFirebaseRef,
+      unbindFirebaseRef,
+      commit
+    }, ref) => {
       bindFirebaseRef("applicationData.Posts", ref)
         .then(() => {
           // commit('setLoaded', true)
@@ -128,7 +152,11 @@ const actions = {
     }
   ),
   setProfileRef: firebaseAction(
-    ({ bindFirebaseRef, unbindFirebaseRef, commit }, ref) => {
+    ({
+      bindFirebaseRef,
+      unbindFirebaseRef,
+      commit
+    }, ref) => {
       bindFirebaseRef("UserProfile", ref)
         .then(() => {
           console.log("User Loaded: 🎉 ");
