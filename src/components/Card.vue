@@ -8,7 +8,7 @@
 
     <v-responsive class="orange">
       <!-- <img @load="log" :src="data.image"> -->
-      <v-img transition="imageFade" :aspect-ratio="16/9" :src="'https://picsum.photos/600/400?random' + Math.random()">
+      <v-img transition="imageFade" :aspect-ratio="16/9" :src="data.image.downloadUrl">
         <v-layout slot="placeholder" fill-height align-center justify-center ma-0>
           <v-progress-circular :size="49" :width="6" indeterminate color="yellow"></v-progress-circular>
         </v-layout>
@@ -33,6 +33,7 @@ export default {
       imageLoaded: false
     };
   },
+  watch: {},
 
   computed: {
     imageHeight: function() {
@@ -47,7 +48,6 @@ export default {
       }
     }
   },
-
   methods: {
     log: function() {
       console.log("test");
@@ -58,6 +58,7 @@ export default {
       this.imageLoaded = true;
     }
   },
+
   created() {}
 };
 </script>
