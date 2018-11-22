@@ -5,6 +5,7 @@ import firebase from "firebase/app";
 import "firebase/auth";
 import Vue from "vue";
 import contenteditableDirective from "vue-contenteditable-directive";
+import Notifications from 'vue-notification';
 import VueParticles from "vue-particles/src/vue-particles/";
 import VueTextareaAutosize from 'vue-textarea-autosize';
 import Vuetify from "vuetify";
@@ -14,14 +15,14 @@ import "../node_modules/material-design-icons-iconfont/dist/material-design-icon
 import App from "./App.vue";
 import router from "./router";
 import store from "./store/store";
-import './registerServiceWorker'
 
 
+Vue.use(Notifications)
 Vue.use(VueParticles)
 Vue.use(VueTextareaAutosize)
 Vue.use(contenteditableDirective);
 
-// Tell Vue.js to use vue-highlightjs
+
 
 Vue.use(Vuetify, {
   theme: {
@@ -29,6 +30,7 @@ Vue.use(Vuetify, {
     jet: "#3B2C35",
     orange: "#FE5F55",
     lightBlack: "#465362",
+    red: '#fe5f55',
     error: "#f78888",
     warning: "#f3d250",
     info: "#2196f3",
