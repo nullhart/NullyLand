@@ -16,30 +16,28 @@
             <span class="headline black--text">Add/Edit Post Element</span>
           </v-card-title>
           <v-card-text>
-            <v-container grid-list-sm>
+            <v-container grid-list-xs>
               <v-layout wrap>
                 <v-flex xs12>
-                  <v-select solo v-model="newItemType" :items="postElementTypes" item-text="title" item-value="value" return-object label="Element Type" required></v-select>
+                  <v-select outline v-model="newItemType" :items="postElementTypes" item-text="title" item-value="value" return-object required label="Element Type" required></v-select>
                 </v-flex>
                 <v-flex xs12>
-                  <v-text-field solo v-model="newItemTitle" label="Element Title"></v-text-field>
+                  <v-text-field outline v-model="newItemTitle" label="Element Title"></v-text-field>
                 </v-flex>
                 <v-flex xs12>
-                  <v-textarea v-model="newItemDescription" solo label="Element Description"></v-textarea>
-                </v-flex>
-                <v-flex xs12>
-                  <v-text-field solo v-model="newItemUrl" label="Element Url"></v-text-field>
+                  <v-textarea v-model="newItemDescription" outline label="Element Description"></v-textarea>
                 </v-flex>
 
-                <div v-show="newItemType.value == 'snippit'">
-                  <v-flex xs12>
-                    <v-text-field :auto-grow="true" style="width: 200%;" solo background-color="white" v-model="newItemLanguage" label="Code Snippit Language"></v-text-field>
-                  </v-flex>
-                  <v-flex xs12>
-                    <v-textarea :auto-grow="true" style="width: 200%;" solo background-color="white" v-model="newItemCode" label="Element Code Snippet"></v-textarea>
-                  </v-flex>
+                <v-flex xs12 v-show="newItemType.value == 'yt'">
+                  <v-text-field outline v-model="newItemUrl" label="Element Url"></v-text-field>
+                </v-flex>
 
-                </div>
+                <v-flex xs12 v-show="newItemType.value == 'snippit'">
+                  <v-text-field outline v-model="newItemLanguage" label="Code Snippit Language"></v-text-field>
+                </v-flex>
+                <v-flex xs12 v-show="newItemType.value == 'snippit'">
+                  <v-textarea :auto-grow="true" outline v-model="newItemCode" label="Element Code Snippet"></v-textarea>
+                </v-flex>
 
                 <v-flex xs12>
                   <label for="image">Element Image</label>
@@ -49,8 +47,6 @@
                       <v-img :src="newItemImage" v-model="newItemImage"> <input style="width: 435px; height: 250px; highlight: none; opacity: 0;" @change="onChange($event)" type="file" accept="image/*" id="image"></v-img>
                     </transition>
                   </v-responsive>
-                  {{this.$store.state.newPost}}
-
                 </v-flex>
 
               </v-layout>
@@ -79,29 +75,30 @@
         </v-list-tile>
       </v-list>
     </v-menu>
-    <v-container @contextmenu="show" style="margin-left: 40px;">
-      <v-card class="elevation-3">
-        <div class="text-xs-center">
-          <h1>Post Info</h1>
-
-          <div class="text-xs-center AllowClick font-weight-bold display-2" contenteditable="true" @input="$store.state.newPost.title = $event.target.childNodes[0].data">{{$store.state.newPost.title}}</div>
-          <div class="text-xs-center AllowClick font-weight-normal display-1" contenteditable="true" @input="$store.state.newPost.description = $event.target.childNodes[0].data">{{$store.state.newPost.description}}</div>
-          <v-flex>
-            <v-select style="padding: 30px;" class="AllowClick" v-model="newItemTags" :items="tags" chips label="Chips" multiple></v-select>
-          </v-flex>
-          <v-flex xs6 style="margin: auto;">
-            <v-img xs2 :src="articleThumbnail" v-model="articleThumbnail"> <input class="AllowClick" style="width: 100%; height: 100%; highlight: none; opacity: 0;" @change="onChange($event)" type="file" accept="image/*" id="image"></v-img>
-          </v-flex>
-        </div>
-      </v-card>
+    <v-container @contextmenu="show" style="margin: auto;">
+      <v-flex xs8 style="margin: auto;">
+        <v-card class="elevation-3">
+          <div class="text-xs-center">
+            <div>
+              <input style="width: 100%" class="text-xs-center AllowClick font-weight-bold display-1" v-model="$store.state.newPost.title">
+            </div>
+            <textarea style="width:100%; height: 100px;" class="text-xs-center AllowClick font-weight-normal " v-model="$store.state.newPost.description"></textarea>
+            <v-flex>
+              <v-select style="padding: 30px;" class="AllowClick" v-model="newItemTags" :items="tags" chips label="Chips" multiple></v-select>
+            </v-flex>
+            <v-flex xs6 style="margin: auto; cursor: pointer;">
+              <v-img xs2 :src="articleThumbnail" v-model="articleThumbnail"> <input class="AllowClick " style="width: 100%; height: 100%; highlight: none; opacity: 0; " @change="uploadThumbnail($event)" type="file" accept="image/*" id="image"></v-img>
+            </v-flex>
+          </div>
+        </v-card>
+      </v-flex>
       <v-divider class="ma-2"></v-divider>
       <div>
-
         <div @click.right="changeSelectedElement(i)" v-for="(things, i) in $store.state.newPost.content" :key="i" style="perspective: 600px;">
-          <dynamic-sub-step slot="activator" style="margin: auto;" :data="things" class="AllowClick" :style="'animation-delay: ' + 300 * i + 'ms !important; will-change: auto; '" v-show="test " />
-
+          <dynamic-sub-step slot="activator" style="margin: auto;" :data="things" class="AllowClick" :style="'animation-delay: ' + 300 * i + 'ms !important; will-change: auto; '" v-show="content " />
         </div>
       </div>
+
     </v-container>
 
   </div>
@@ -115,15 +112,18 @@ import "firebase/storage";
 import db from "../helpers/firebaseInit";
 
 import imageUploader from "../helpers/imageUploader.js";
+import { rejects } from "assert";
 
 const articlesRef = db.collection("articles");
 const articlesCountRef = db.collection("articleCounter").doc("totalArticles");
-
+const shortid = require("shortid");
 export default {
   name: "PostCreator",
   components: { DynamicSubStep },
   data() {
     return {
+      dialog: false,
+      close: false,
       showMenu: false,
       x: 0,
       y: 0,
@@ -141,7 +141,7 @@ export default {
       notificationStatus: false,
       notification: "",
       notificationType: "",
-      test: false,
+      content: false,
       articleTitle: "test",
       articleDescription: "test",
       newItemType: {},
@@ -149,25 +149,27 @@ export default {
       newItemDescription: "",
       newItemTags: [],
       newItemUrl: "",
-      newItemImage: `https://via.placeholder.com/350x200`,
+      newItemImage: `data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAA4ODg4PDg8REQ8WFxUXFiAdGxsdIDAiJSIlIjBJLjUuLjUuSUFOQDtATkF0W1FRW3SGcWtxhqORkaPNws3///8BDg4ODg8ODxERDxYXFRcWIB0bGx0gMCIlIiUiMEkuNS4uNS5JQU5AO0BOQXRbUVFbdIZxa3GGo5GRo83Czf/////CABEIAYACQAMBIgACEQEDEQH/xAAaAAEBAQEBAQEAAAAAAAAAAAAABAMCAQUG/9oACAEBAAAAAP24AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFPoBKAAAAAAAAAAqnqk8CqUAAAAAAAAABV1tHj7TKqlAAAAAAAAAAVS65e39c/PqlAAAAAAAAAAVS0a6emPMoAAAAAAAAACrOwHOMoAAAAAAAAACrPsGesoAAAAAAAAACvUBPOAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB//8QAFAEBAAAAAAAAAAAAAAAAAAAAAP/aAAgBAhAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD/xAAUAQEAAAAAAAAAAAAAAAAAAAAA/9oACAEDEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP/EAC0QAAECAwYFAwUBAAAAAAAAAAEAAwIEEhE0UWKCkRAUMVBSEyAiISNBgaAy/9oACAEBAAE/AP5v24IBBXGq5bKq5bKq5bKq5bKq5bKq5bKq5bKq5bKnW4KBHB383fSoIDGbAhKGK2mNEGEkHqPcbvp7+bvpUmYBFHVwmDCXTTgOABJACMt9u0H5cTd9Pfzd9KBIIINhXru+Q24AEkAJtsNjNwfl7RUP9cDd9Pfzd9PBpm35RdPwE/L/AFtg/YTLQbFp6+ycbhgLZHU9Ubvp7+bvpTMAiJJ6D8e+f6tftG76e/m76U096dQsJtXMjwK5keBXMjwK5keBXMjwK5keBTjgcp+JFiN309/ZcaoocQEjiN0BI4jdASOI3QEjiN0BI4jdASOI3QEjiN0BI4jdOuQUUQfzgf/EABQRAQAAAAAAAAAAAAAAAAAAAJD/2gAIAQIBAT8AWD//xAAUEQEAAAAAAAAAAAAAAAAAAACQ/9oACAEDAQE/AFg//9k=`,
       newItemImageInfo: {},
       newItemCode: ``,
       newItemLanguage: "",
-      articleThumbnail: "https://via.placeholder.com/350x200",
+      articleThumbnail:
+        "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAA4ODg4PDg8REQ8WFxUXFiAdGxsdIDAiJSIlIjBJLjUuLjUuSUFOQDtATkF0W1FRW3SGcWtxhqORkaPNws3///8BDg4ODg8ODxERDxYXFRcWIB0bGx0gMCIlIiUiMEkuNS4uNS5JQU5AO0BOQXRbUVFbdIZxa3GGo5GRo83Czf/////CABEIAYACQAMBIgACEQEDEQH/xAAaAAEBAQEBAQEAAAAAAAAAAAAABAMCAQUG/9oACAEBAAAAAP24AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFPoBKAAAAAAAAAAqnqk8CqUAAAAAAAAABV1tHj7TKqlAAAAAAAAAAVS65e39c/PqlAAAAAAAAAAVS0a6emPMoAAAAAAAAACrOwHOMoAAAAAAAAACrPsGesoAAAAAAAAACvUBPOAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB//8QAFAEBAAAAAAAAAAAAAAAAAAAAAP/aAAgBAhAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD/xAAUAQEAAAAAAAAAAAAAAAAAAAAA/9oACAEDEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP/EAC0QAAECAwYFAwUBAAAAAAAAAAEAAwIEEhE0UWKCkRAUMVBSEyAiISNBgaAy/9oACAEBAAE/AP5v24IBBXGq5bKq5bKq5bKq5bKq5bKq5bKq5bKq5bKnW4KBHB383fSoIDGbAhKGK2mNEGEkHqPcbvp7+bvpUmYBFHVwmDCXTTgOABJACMt9u0H5cTd9Pfzd9KBIIINhXru+Q24AEkAJtsNjNwfl7RUP9cDd9Pfzd9PBpm35RdPwE/L/AFtg/YTLQbFp6+ycbhgLZHU9Ubvp7+bvpTMAiJJ6D8e+f6tftG76e/m76U096dQsJtXMjwK5keBXMjwK5keBXMjwK5keBTjgcp+JFiN309/ZcaoocQEjiN0BI4jdASOI3QEjiN0BI4jdASOI3QEjiN0BI4jdOuQUUQfzgf/EABQRAQAAAAAAAAAAAAAAAAAAAJD/2gAIAQIBAT8AWD//xAAUEQEAAAAAAAAAAAAAAAAAAACQ/9oACAEDAQE/AFg//9k=",
 
       currentSelectedElement: -1,
-      dialog: false,
+
       postElementTypes: [
-        { value: "snippit", title: "Code Snippit" },
+        { value: "snippit", title: "Code" },
         { value: "card", title: "Card" },
         { value: "list", title: "List" },
-        { value: "yt", title: "YouTube" }
+        { value: "yt", title: "YouTube" },
+        { value: "textChunk", title: "Text Block" }
       ],
       postDetails: {}
     };
   },
   mounted() {
-    this.test = true;
+    this.content = true;
   },
   computed: {
     postInfo: function() {
@@ -214,9 +216,24 @@ export default {
           code: this.newItemCode,
           language: this.newItemLanguage
         };
+      } else if (this.newItemType.value == "textChunk") {
+        var newElement = {
+          type: this.newItemType.value,
+          title: this.newItemTitle,
+          text: this.newItemDescription
+        };
       }
 
       this.$store.state.newPost.content.push(newElement);
+      this.newItemType = "";
+      this.newItemTitle = "";
+      this.newItemDescription = "";
+      this.newItemTags = "";
+      this.newItemUrl = "";
+      this.newItemImage = "";
+      this.newItemImageInfo = "";
+      this.newItemCode = "";
+      this.newItemLanguage = "";
     },
 
     publishArticle: function() {
@@ -226,27 +243,18 @@ export default {
         dateCreated: new Date(),
         dateUpdated: "",
         thumbnail: this.articleThumbnail,
-
+        id: shortid.generate() + Date.now(),
         content: JSON.parse(JSON.stringify(this.$store.state.newPost)).content
       };
-      console.log(articleObj);
+
       articlesRef
         .add(articleObj)
         .then(async result => {
-          console.log("Post Published");
-          var currentCount = await db
-            .collection("articleCounter")
-            .doc("totalArticles")
-            .get()
-            .then(data => {
-              return data.data().count;
-            });
-          console.log(`Current count is at: ${currentCount}`);
-
-          db.collection("articleCounter")
-            .doc("totalArticles")
-            .set({ count: currentCount + 1 });
-          this.notificationController("Article Published!", "success");
+          this.$notify({
+            group: "main",
+            type: "success",
+            title: "Article Published!"
+          });
         })
         .catch(err => {
           console.log(err);
@@ -285,6 +293,21 @@ export default {
           };
         });
       });
+    },
+    uploadThumbnail(e) {
+      const files = e.target.files || e.dataTransfer.files;
+      if (!files.length) {
+        return;
+      }
+      const file = files[0];
+
+      this.Async_Upload(file).then(data => {
+        this.newItemImage = data;
+        imageUploader(data, "images", "testFileName").then(data => {
+          console.log(data);
+          this.articleThumbnail = data.downloadUrl;
+        });
+      });
     }
   }
 };
@@ -295,6 +318,16 @@ export default {
   position: fixed;
   width: 50px;
   height: 90%;
+}
+
+.grow {
+  resize: both;
+} /* none|horizontal|vertical|both */
+.grow.vert {
+  resize: vertical;
+}
+.grow.noResize {
+  resize: none;
 }
 
 @keyframes rotateWobble {
