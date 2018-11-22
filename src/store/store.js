@@ -26,65 +26,19 @@ const state = {
       title: "How to Setup MagicMirror²",
       categories: [],
       content: [{
-          type: "snippit",
-          title: "Snippit Example",
-          language: "bash",
-          code: `sudo apt-get update && sudo apt-get upgrade`
-        },
-        {
-          type: "snippit",
-          title: "Snippit Example",
-          language: "bash",
-          code: `bash -c "$(curl - sL https: //raw.githubusercontent.com/MichMich/MagicMirror/master/installers/raspberry.sh)"`
-        },
-        {
-          type: "yt",
-          title: "YouTube Embedded",
-          text: "random text",
-          url: "https://www.youtube.com/embed/K3z8bJBup_Y"
-        },
-        {
-          type: "list",
-          title: "List Example",
-          content: [{
-              title: "test",
-              description: "helo how are you",
-              url: "https://google.com"
-            },
-            {
-              title: "test",
-              description: "helo how are you",
-              url: "https://google.com"
-            },
-            {
-              title: "test",
-              description: "helo how are you",
-              url: "https://google.com"
-            }
-          ]
-        },
+        type: "snippit",
+        title: "Snippit Example",
+        language: "bash",
+        url: "",
 
-        {
-          title: "Card Example",
-          type: "card",
-          text: "Some text before steps",
-          image: {
-            downloadUrl: "https://res.cloudinary.com/nullyland/image/upload/v1535551411/Screen_Shot_2018-08-29_at_8.01.50_AM_vblntt.png"
-          }
-        },
-
-        {
-          title: "Card Example",
-          type: "card",
-          text: "type `sudo apt update && sudo apt upgrade`",
-          image: {
-            downloadUrl: "https://picsum.photos/900/500"
-          }
-        }
-      ]
+        code: `sudo apt-get update && sudo apt-get upgrade`,
+        image: "",
+        order: 5
+      }]
     }
   },
   mainPosts: [],
+  currentArticle: [],
   lastVisibleEnd: "",
   lastVisibleStart: "",
   newPost: {
@@ -96,6 +50,7 @@ const state = {
   },
   UserProfile: {},
   applicationState: {
+    online: true,
     loaded: false,
     drawer: false,
     authenticated: false,
@@ -119,6 +74,12 @@ const mutations = {
 };
 
 const actions = {
+  pushNotification: function ({
+    commit
+  }, state) {
+    console.log(state);
+    this.state.applicationState.notificationQueue.push(state);
+  },
   //
   authUpdate: function ({
     commit
