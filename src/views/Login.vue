@@ -14,11 +14,12 @@
             <v-text-field @keyup.enter="login" validate-on-blur v-model="password" :append-icon="showPass ? 'visibility_off' : 'visibility'" :rules="[rules.required, rules.min]" :type="showPass ? 'text' : 'password'" label="Password" hint="At least 8 characters" counter @click:append="showPass = !showPass"></v-text-field>
           </v-flex>
           <v-flex class="loginButton">
-            <v-btn round class=" elevation-6 white--text font-weight-bold" large :loading="LoginProgress" @click="login">Login</v-btn>
+            <v-btn round class="elevation-6 white--text font-weight-bold" large :loading="LoginProgress" @click="login">Login</v-btn>
+            <v-btn round class=" red elevation-6 white--text font-weight-bold" large :loading="RegisterProgress" @click="register">Register</v-btn>
           </v-flex>
         </v-container>
       </v-form>
-      <v-form key="1" class='login elevation-24 white' v-if="$store.state.applicationState.login.modal == 'Sign Up'">
+      <!-- <v-form key="1" class='login elevation-24 white' v-if="$store.state.applicationState.login.modal == 'Sign Up'">
         <v-flex class="error" style="width: 5px;">
           <h2 class="error--text" style="position: relative; left: 20px; width: 300px;">Sign Up</h2>
         </v-flex>
@@ -33,7 +34,7 @@
             <v-btn round class="elevation-6 white--text font-weight-bold" large :loading="RegisterProgress" @click="register">Sign Up</v-btn>
           </v-flex>
         </v-container>
-      </v-form>
+      </v-form> -->
     </transition>
 
   </div>
@@ -71,19 +72,41 @@ export default {
       this.RegisterProgress = !this.RegisterProgress;
       firebase
         .auth()
-        .createUserWithEmailAndPassword(
-          this.registerEmail,
-          this.registerPassword
-        )
+        .createUserWithEmailAndPassword(this.email, this.password)
         .then(
           user => {
-            this.$router.go("/");
+            db.collection("users")
+              .doc(firebase.auth().currentUser.uid)
+              .set({
+                name: "",
+                phoneNumber: "",
+                saved: []
+              })
+              .then(result => {
+                this.$store.state.applicationState.loading = false;
+                this.$notify({
+                  group: "main",
+                  type: "success",
+                  title: "Profile Created! 🎉",
+                  text: ""
+                });
+                setTimeout(() => {
+                  this.$router.push("/profile");
+                  setTimeout(() => {
+                    this.$router.go("/profile");
+                  }, 500);
+                }, 2000);
+              });
           },
           err => {
             this.RegisterProgress = !this.RegisterProgress;
             console.log(err);
-            this.registerEmail = "";
-            this.registerPassword = "";
+            this.$notify({
+              group: "main",
+              type: "error",
+              title: "Registration Failed",
+              text: err.message
+            });
           }
         );
       e.preventDefault();
@@ -100,11 +123,12 @@ export default {
           err => {
             e.preventDefault();
             this.LoginProgress = !this.LoginProgress;
-            this.loginErr = err.message;
-            this.showErr = true;
-            setTimeout(() => {
-              this.showErr = false;
-            }, 300);
+            this.$notify({
+              group: "main",
+              type: "error",
+              title: "Login Failed",
+              text: err.message
+            });
           }
         );
       e.preventDefault();
