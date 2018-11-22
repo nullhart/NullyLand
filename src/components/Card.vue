@@ -2,20 +2,18 @@
 
 <template>
   <v-card class="elevation-3 post-image" style="margin-left:auto;margin-right:auto;">
-    <v-card-text class="orange  elevation-0 white--text mb-0">
+    <v-card-text class="plum-gradient  elevation-0 white--text mb-0">
       <p class="title font-weight-bold mb-0 text-xs-center">{{data.title}}</p>
     </v-card-text>
-
     <v-responsive class="orange">
-      <!-- <img @load="log" :src="data.image"> -->
       <v-img transition="imageFade" :aspect-ratio="16/9" :src="data.image.downloadUrl">
         <v-layout slot="placeholder" fill-height align-center justify-center ma-0>
           <v-progress-circular :size="49" :width="6" indeterminate color="yellow"></v-progress-circular>
         </v-layout>
       </v-img>
 
+      <v-card-text class="white">{{data.description}}</v-card-text>
     </v-responsive>
-
   </v-card>
 </template>
 
@@ -28,7 +26,6 @@ export default {
   props: ["data"],
   data: function() {
     return {
-      hello: "test",
       loaded: false,
       imageLoaded: false
     };
@@ -50,7 +47,6 @@ export default {
   },
   methods: {
     log: function() {
-      console.log("test");
       this.imageLoaded = true;
       return null;
     },
@@ -64,6 +60,9 @@ export default {
 </script>
 
 <style >
+.plum-gradient {
+  background: linear-gradient(0.45turn, #667eea, #764ba2);
+}
 .imageFade-enter-active {
   transition: opacity 1s ease-in-out;
 }
