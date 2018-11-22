@@ -1,33 +1,56 @@
 <template>
   <v-app id="main" light>
-    <!-- Drawer -->
-    <!-- <div style="position: absolute; top: 70px; right: 10px; width: 300px; z-index: 1;">
-      <transition name="fade">
-        <v-alert v-show="mounted" :timeout="300" class="elevation-6" key="2" :value="true" type="success">
-          This is a success alert.
-        </v-alert>
-      </transition>
-
-    </div> -->
+    <notifications style="margin-top: 70px;" group="main" classes="notification" />
     <v-navigation-drawer class="hide-overflow" width="200" :permanent="!mobile" v-model="$store.state.applicationState.drawer" light fixed clipped app>
       <div class="triangle-up elevation-10"></div>
       <v-card height="240" flat>
         <v-avatar class="center" size="100" style="z-index: 1;">
-          <transition name="fade">
-            <img key="profile" class="mt-5 orange" v-show="profileImageLoaded" v-on:load="profileImageUpdate" :src="$store.state.UserProfile.profileImage">
+          <transition name="fade1">
+            <img class="mt-5" v-show="profileImageLoaded" v-on:load="profileImageUpdate" :src="$store.state.UserProfile.profileImage">
           </transition>
-
         </v-avatar>
       </v-card>
       <v-divider style="position: relative; top: -400px;"></v-divider>
       <v-list style="position: relative; top: -400px;">
-        <v-list-tile :ripple="{class: 'orange--text'}" v-for="item in things" :key="item.title" @click="$router.push(item.action)">
+
+        <v-list-tile :ripple="{class: 'orange--text'}" @click="mainArticles">
           <v-list-tile-action>
-            <v-icon>{{ item.icon }}</v-icon>
+            <v-icon>mdi-book-open</v-icon>
           </v-list-tile-action>
           <v-list-tile-content>
             <v-list-tile-title>
-              {{ item.title }}
+              Articles
+            </v-list-tile-title>
+          </v-list-tile-content>
+        </v-list-tile>
+
+        <v-list-tile v-show="this.$store.state.UserProfile.admin" :ripple="{class: 'orange--text'}" @click="$router.push('/postcreator')">
+          <v-list-tile-action>
+            <v-icon>create</v-icon>
+          </v-list-tile-action>
+          <v-list-tile-content>
+            <v-list-tile-title>
+              Create Post
+            </v-list-tile-title>
+          </v-list-tile-content>
+        </v-list-tile>
+        <v-list-tile v-show=" Object.keys(this.$store.state.UserProfile).length !== 0" :ripple="{class: 'orange--text'}" @click="favedArticles">
+          <v-list-tile-action>
+            <v-icon>mdi-heart</v-icon>
+          </v-list-tile-action>
+          <v-list-tile-content>
+            <v-list-tile-title>
+              Saved
+            </v-list-tile-title>
+          </v-list-tile-content>
+        </v-list-tile>
+        <v-list-tile :ripple="{class: 'orange--text'}" @click="$router.push('profile')">
+          <v-list-tile-action>
+            <v-icon>account_box</v-icon>
+          </v-list-tile-action>
+          <v-list-tile-content>
+            <v-list-tile-title>
+              My Profile
             </v-list-tile-title>
           </v-list-tile-content>
         </v-list-tile>
@@ -64,30 +87,81 @@
 
       <vue-particles class="particles" key="part" color="#fe5f55" :particleOpacity="0.7" linesColor="#FFAB91" :particlesNumber="30" shapeType="circle" :particleSize="5" :linesWidth="2" :lineLinked="true" :lineOpacity="0.4" :linesDistance="150" :moveSpeed="3" :hoverEffect="true" hoverMode="grab" :clickEffect="true" clickMode="push">
       </vue-particles>
-      <!-- <transition name="fade" mode="out-in"> -->
-      <router-view style="position: relative; top: 0px;" key="router"></router-view>
+      <transition name="fade1" mode="out-in">
+        <router-view style="position: relative; top: 0px;" key="router"></router-view>
 
-      <!-- </transition> -->
+      </transition>
       <div v-if="this.$route.name == 'posts' " style="display: flex; justify-content: center;">
-
-        <v-btn icon fab class=" white--text more-Button" @click="moreArticles">
+        <v-btn v-show="this.$store.state.lastVisibleEnd" icon fab class=" white--text more-Button" @click="moreArticles">
           <v-icon>mdi-arrow-down-bold</v-icon>
         </v-btn>
       </div>
     </v-content>
     <!--Footer -->
 
-    <v-footer app class="text-xs-center">
-      <p class="ma-2 ">Created with ❤️ by Blake Mastrud</p>
-      <a style="text-decoration: none;" href="https://github.com/nullhart" target="_blank">
-        <v-icon>mdi-github-box</v-icon>
-      </a>
-
-    </v-footer>
+    <transition name="rollUp">
+      <v-footer key="footer" v-show="!$store.state.applicationState.online" :app="!$store.state.applicationState.online" :class="{red: !$store.state.applicationState.online, white: $store.state.applicationState.online}">
+        <v-container fluid class="ma-2 pa-0 text-xs-center">
+          <span v-show="$store.state.applicationState.online">
+            <v-icon>mdi-network</v-icon>
+          </span>
+          <div class="white--text" v-show="!$store.state.applicationState.online">
+            <v-icon white class="ma-0 pa-0 white--text">mdi-close-network</v-icon>
+          </div>
+        </v-container>
+      </v-footer>
+    </transition>
 
   </v-app>
 </template>
-<style >
+<style lang="scss">
+.rollUp-enter-active,
+.rollUp-leave-active {
+  transform: translateY(40px);
+  transition: 0.5s;
+}
+.rollUp-enter, .rollUp-leave-to /* .fade-leave-active below version 2.1.8 */ {
+  transition: 0.5s;
+}
+
+.fade1-enter-active,
+.fade1-leave-active {
+  transition: opacity 0.5s;
+}
+.fade1-move {
+  transition: 1.5s;
+}
+.fade1-enter, .fade1-leave-to /* .fade-leave-active below version 2.1.8 */ {
+  opacity: 0;
+}
+
+.notification {
+  padding: 10px;
+  margin: 0 5px 5px;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+
+  font-size: 12px bold;
+
+  color: #ffffff;
+  background: #44a4fc;
+  border-left: 5px solid #187fe7;
+
+  &.warn {
+    background: #f3d250;
+    border-left-color: #f3d250;
+  }
+
+  &.error {
+    background: #fe5f55;
+    border-left-color: #fe5f55;
+  }
+
+  &.success {
+    background: #68cd86;
+    border-left-color: #42a85f;
+  }
+}
+
 .particles {
   position: fixed;
   width: 100%;
@@ -162,47 +236,12 @@ import "firebase/auth";
 import db from "./helpers/firebaseInit";
 import router from "./router.js";
 
-
-
 export default {
   name: "app",
   components: { router },
   data() {
     return {
-      things: [
-        {
-          title: "Posts",
-          icon: "mdi-book-open",
-          action: "/posts",
-          admin: false
-        },
-        {
-          title: "Feed",
-          icon: "mdi-newspaper",
-          action: "/feed",
-          admin: false
-        },
-        {
-          title: "Create Post",
-          icon: "create",
-          action: "/postcreator",
-          admin: true
-        },
-
-        {
-          title: "Saved",
-          icon: "mdi-heart",
-          action: "/saved",
-          admin: false
-        },
-        {
-          title: "My Profile",
-          icon: "account_box",
-          action: "/profile",
-          admin: false
-        }
-      ],
-
+      fab: false,
       currentUser: {},
       page: 1,
       newData: [],
@@ -214,9 +253,53 @@ export default {
   },
 
   methods: {
+    mainArticles: function() {
+      this.$router.push("/");
+      db.collection("articles")
+        .orderBy("dateCreated")
+        .limit(6)
+        .get()
+        .then(documentSnapshots => {
+          // Get the last visible document
+          this.$store.state.lastVisibleEnd = documentSnapshots.docs[6 - 1];
+
+          var articles = [];
+          documentSnapshots.forEach(doc => articles.push(doc.data()));
+
+          this.$store.state.mainPosts = articles;
+        });
+    },
+    favedArticles: function() {
+      this.$router.push("/");
+      this.$store.state.mainPosts = [];
+      this.$store.state.UserProfile.saved.forEach(element => {
+        db.collection("articles")
+          .where("id", "==", element.id)
+          .get()
+          .then(data => {
+            data.forEach(things => {
+              this.$store.state.mainPosts.push(things.data());
+            });
+          });
+      });
+    },
+    notifyTest: function() {
+      this.$notify({
+        group: "main",
+        type: "warn",
+        title: "Test",
+        text: ""
+      });
+    },
     moreArticles: function() {
       if (this.$store.state.lastVisibleEnd == undefined) {
         console.log("no more articles");
+        this.$notify({
+          group: "main",
+          type: "warn",
+          title: "No More Articles",
+          text: ""
+        });
         return;
       }
       db.collection("articles")
@@ -236,6 +319,7 @@ export default {
           console.log("err");
         });
     },
+
     logoLoadedUpdate: function() {
       this.logoLoaded = true;
     },
@@ -256,7 +340,7 @@ export default {
         .auth()
         .signOut()
         .then(() => {
-          this.$router.push({ location: "/" });
+          this.$router.go({ location: "/" });
         });
     }
   },
@@ -283,6 +367,15 @@ export default {
   mounted() {
     this.$vuetify.breakpoint.sm = 1215;
     this.mounted = true;
+
+    window.addEventListener("online", () => {
+      console.log("Now Online");
+      this.$store.state.applicationState.online = true;
+    });
+    window.addEventListener("offline", () => {
+      console.log("Now Offline");
+      this.$store.state.applicationState.online = false;
+    });
     db.collection("articles")
       .orderBy("dateCreated")
       .limit(6)
@@ -293,7 +386,7 @@ export default {
 
         var articles = [];
         documentSnapshots.forEach(doc => articles.push(doc.data()));
-        console.log(articles);
+
         this.$store.state.mainPosts = articles;
       });
   }
