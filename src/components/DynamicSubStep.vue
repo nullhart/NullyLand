@@ -2,12 +2,7 @@
 
 <template>
   <div style="max-width: 800px;">
-
-    <card class="mb-3" v-show="data.type == 'card'" :data="data" />
-    <snippit class="mb-3" v-show="data.type == 'snippit'" :data="data" />
-    <list class="mb-3" v-show="data.type == 'list'" :data="data" />
-    <yt class="mb-3" v-show="data.type == 'yt'" :data="data" />
-
+    <component v-bind:is="data.type" :data="data" class="mb-3"></component>
   </div>
 </template>
 
@@ -17,10 +12,11 @@ import card from "./Card";
 import list from "./List";
 import snippit from "./Snippit";
 import yt from "./YT";
+import textChunk from "./textChunk";
 
 export default {
   name: "DynamicSubStep",
-  components: { card, list, snippit, yt },
+  components: { card, list, snippit, yt, textChunk },
   props: ["data"],
   data: function() {
     return {};
