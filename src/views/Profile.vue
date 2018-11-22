@@ -1,18 +1,9 @@
 
 <template >
-  <v-container class="white mt-5 elevation-3">
-    <div v-on:keypress.enter="update($store.state.UserProfile.id, $store.state.UserProfile)">
-      <v-snackbar color="green" v-model="notification" multi-line :timeout="2000">
-        Profile Updated! 🎉
-        <v-btn color="black" flat @click="notification = false" icon>
-          <v-icon>close</v-icon>
-        </v-btn>
-      </v-snackbar>
-
+  <v-container>
+    <v-flex class="elevation-3 white mt-5 xs10 offset-xs1 pa-2" v-on:keypress.enter="update($store.state.UserProfile.id, $store.state.UserProfile)">
       <v-form v-show="$store.state.applicationState.loaded == true">
-
         <v-avatar size="150" class="ma-4" color="blue lighten-4">
-
           <img v-show="this.$store.state.UserProfile.profileImage != null || file_changed ==true" :size=23 :src="this.$store.state.UserProfile.profileImage" @click="onChange($event)">
           <input @input="onChange($event)" placeholder="tst" type="file" name="file" accept="image/*" style="border-radius: 100%;opacity: 0; z-index: 2; width: 150px; height: 150px; position: absolute; left: 0px; top: 0px; cursor: pointer;">
           <div v-show="this.$store.state.UserProfile.profileImage == null">
@@ -24,14 +15,14 @@
         <v-text-field v-model="$store.state.UserProfile.name" :counter="20" label="Name"></v-text-field>
         <v-text-field v-model="$store.state.UserProfile.phoneNumber" :counter="10" label="Phone Number"></v-text-field>
         <v-flex>
-          <v-btn round :loading="$store.state.applicationState.loading == true" large @click="update($store.state.UserProfile.id, $store.state.UserProfile)" color="orange" dark>
+          <v-btn round :loading="$store.state.applicationState.loading == true" :disabled="!$store.state.applicationState.online" large @click="update($store.state.UserProfile.id, $store.state.UserProfile)" color="orange" :dark="$store.state.applicationState.online">
             <v-icon>save</v-icon>
           </v-btn>
         </v-flex>
 
       </v-form>
 
-    </div>
+    </v-flex>
   </v-container>
 </template>
   
@@ -67,9 +58,20 @@ export default {
         .update(data)
         .then(result => {
           this.$store.state.applicationState.loading = false;
-          this.notification = true;
+          this.$notify({
+            group: "main",
+            type: "success",
+            title: "Profile Updated! 🎉",
+            text: ""
+          });
         })
         .catch(err => {
+          this.$notify({
+            group: "main",
+            type: "success",
+            title: "Profile Update Failed! 😢",
+            text: err
+          });
           console.log(err);
         });
     },
@@ -130,6 +132,11 @@ export default {
 };
 </script>
 <style scoped>
+.v-btn-disabled {
+  color: grey !important;
+  background-color: red;
+}
+
 .center-spinner {
   position: absolute;
   top: 50%;
