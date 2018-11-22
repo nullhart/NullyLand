@@ -1,9 +1,8 @@
 <template>
-  <v-container>
-    <div style="text-align: center;" class="display-2 font-weight-bold">{{selectedPost.title}}</div>
-
-    <v-divider style="margin: 25px;;"></v-divider>
-    <div v-for="(things, i) in selectedPost.content" :key="i" style="perspective: 600px;">
+  <v-container class="noClick">
+    <div style="text-align: center; user-select: none; " class="display-2 font-weight-bold ">{{selectedPost.title}}</div>
+    <v-divider style="margin: 25px;"></v-divider>
+    <div v-for="(things, i) in this.$store.state.applicationData.currentArticle.content" :key="i" style="perspective: 600px;">
       <transition name="stagger">
         <dynamic-sub-step style="margin: auto;" :data="things" class="AllowClick" :style="'animation-delay: ' + 300 * i + 'ms !important; will-change: auto; '" v-show="mounted" />
       </transition>
@@ -19,11 +18,12 @@ export default {
   data() {
     return {
       mounted: false,
-      selectedPost: this.$store.state.applicationData.post
+      selectedPost: this.$store.state.applicationData.currentArticle
     };
   },
   methods: {},
   mounted() {
+    window.scrollTo(0, 0);
     this.mounted = true;
   }
 };
