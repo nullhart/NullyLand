@@ -8,12 +8,18 @@ Vue.use(Router)
 
 let router = new Router({
   mode: "history",
+  scrollBehavior(to, from, savedPosition) {
+    return {
+      x: 0,
+      y: 0
+    }
+  },
   routes: [{
       path: "/posts",
       name: "posts",
       alias: '/',
       component: () =>
-        import ( /* webpackChunkName: "home" */ './views/Posts.vue'),
+        import( /* webpackChunkName: "home" */ './views/Posts.vue'),
       meta: {
         requiresAuth: false
       }
@@ -22,7 +28,7 @@ let router = new Router({
       path: '/login',
       name: 'login',
       component: () =>
-        import ( /* webpackChunkName: "Login" */ './views/Login.vue'),
+        import( /* webpackChunkName: "Login" */ './views/Login.vue'),
       meta: {
         requiresGuest: true
       }
@@ -31,14 +37,14 @@ let router = new Router({
       path: '/post',
       name: 'post',
       component: () =>
-        import ( /* webpackChunkName: "Post" */ './views/Post.vue'),
+        import( /* webpackChunkName: "Post" */ './views/Post.vue'),
 
     },
     {
       path: '/profile',
       name: 'profile',
       component: () =>
-        import ( /* webpackChunkName: "Profile" */ './views/Profile.vue'),
+        import( /* webpackChunkName: "Profile" */ './views/Profile.vue'),
       meta: {
         requiresAuth: true
       }
@@ -47,7 +53,7 @@ let router = new Router({
       path: '/postcreator',
       name: 'postcreator',
       component: () =>
-        import ( /* webpackChunkName: "PostCreator" */ './views/PostCreator.vue'),
+        import( /* webpackChunkName: "PostCreator" */ './views/PostCreator.vue'),
       meta: {
         requiresAuth: true
       }
