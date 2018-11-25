@@ -19,23 +19,6 @@ const state = {
       categories: [],
       content: []
     },
-
-    post: {
-      id: 1,
-      dateCreated: new Date(),
-      title: "How to Setup MagicMirror²",
-      categories: [],
-      content: [{
-        type: "snippit",
-        title: "Snippit Example",
-        language: "bash",
-        url: "",
-
-        code: `sudo apt-get update && sudo apt-get upgrade`,
-        image: "",
-        order: 5
-      }]
-    }
   },
   mainPosts: [],
   currentArticle: [],
