@@ -1,6 +1,12 @@
 <template >
-  <transition-group name="slide-x-transition" tag="v-layout" v-show="mounted" class="manual-v-layout noClick" style="max-width: 1500px;margin: auto; ">
-    <v-flex transition="fade" class="pa-4" v-for="(post, index) in this.$store.state.mainPosts" xs12 sm6 md4 xl4 :key="post.id" v-bind:data-index="index">
+  <!-- <transition-group name="slide-x-transition" tag="v-layout" v-show="mounted" class="manual-v-layout noClick" style="max-width: 1500px;margin: auto; "> -->
+  <v-layout class="manual-v-layout noClick" style="max-width: 1500px;margin: auto; ">
+
+    <v-flex class="text-xs-center" v-show="$store.state.mainPosts.length == 0 && loaded" key="noArticles">
+      <h1>No Articles 😥</h1>
+    </v-flex>
+
+    <v-flex v-show="$store.state.mainPosts != []" transition="fade" class="pa-4" v-for="(post, index) in this.$store.state.mainPosts" xs12 sm6 md4 xl4 :key="post.id" v-bind:data-index="index">
       <v-hover close-delay="0">
         <v-card slot-scope=" { hover }" :class="`elevation-${hover ? 12 : 2}`" class="minny mb-0 AllowClick" style="margin-left:auto;margin-right:auto; padding-bottom: 58px; ">
           <v-responsive>
@@ -29,7 +35,8 @@
         </v-card>
       </v-hover>
     </v-flex>
-  </transition-group>
+  </v-layout>
+  <!-- </transition-group> -->
 
 </template>
 
@@ -45,7 +52,8 @@ export default {
   data() {
     return {
       posts: [],
-      mounted: false
+      mounted: false,
+      loaded: false
     };
   },
 
@@ -53,6 +61,9 @@ export default {
     window.scrollTo(0, 0);
     this.$nextTick().then(data => {
       this.mounted = true;
+      setTimeout(() => {
+        this.loaded = true;
+      }, 1000);
     });
   },
   methods: {
