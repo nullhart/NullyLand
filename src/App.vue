@@ -60,7 +60,7 @@
     <v-toolbar class="navGradient elevation-0" dark fixed clipped-left app>
       <v-toolbar-side-icon @click.stop="$store.state.applicationState.drawer = !$store.state.applicationState.drawer"></v-toolbar-side-icon>
       <transition name="fade">
-        <img @click="$router.push('/')" v-on:load="logoLoadedUpdate" v-show="logoLoaded" style="cursor: pointer;" width="200" src="./assets/ss.png">
+        <img @click="mainArticles" v-on:load="logoLoadedUpdate" v-show="logoLoaded" style="cursor: pointer;" width="200" src="./assets/ss.png">
       </transition>
       <v-spacer></v-spacer>
       <v-menu offset-y>
