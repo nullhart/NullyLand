@@ -87,7 +87,7 @@
 
       <vue-particles class="particles" key="part" color="#fe5f55" :particleOpacity="0.7" linesColor="#FFAB91" :particlesNumber="30" shapeType="circle" :particleSize="5" :linesWidth="2" :lineLinked="true" :lineOpacity="0.4" :linesDistance="150" :moveSpeed="3" :hoverEffect="true" hoverMode="grab" :clickEffect="true" clickMode="push">
       </vue-particles>
-      <transition name="fade1" mode="out-in">
+      <transition name="slide-x-transition" mode="out-in">
         <router-view style="position: relative; top: 0px;" key="router"></router-view>
 
       </transition>
