@@ -75,46 +75,42 @@ export default {
       }
     },
     addToFavs: function(post_id) {
-      if (
-        this.$store.state.UserProfile.saved.find(
-          element => element.id == post_id
-        )
-      ) {
-        //  this.$store.state.UserProfile.saved.splice(post_id);
-        let index = this.$store.state.UserProfile.saved.findIndex(element => {
-          return element.id == post_id;
-        });
-        if (index == 0) {
-          this.$store.state.UserProfile.saved.shift();
+      try {
+        if (
+          this.$store.state.UserProfile.saved.find(
+            element => element.id == post_id
+          )
+        ) {
+          //  this.$store.state.UserProfile.saved.splice(post_id);
+          let index = this.$store.state.UserProfile.saved.findIndex(element => {
+            return element.id == post_id;
+          });
+          if (index == 0) {
+            this.$store.state.UserProfile.saved.shift();
+          } else {
+            this.$store.state.UserProfile.saved.splice(index);
+          }
         } else {
-          this.$store.state.UserProfile.saved.splice(index);
+          this.$store.state.UserProfile.saved.push({
+            id: post_id,
+            dateAdded: new Date()
+          });
         }
-
-        // this.$notify({
-        //   group: "main",
-        //   type: "warn",
-        //   title: "Removed Saved Article"
-        // });
-      } else {
-        this.$store.state.UserProfile.saved.push({
-          id: post_id,
-          dateAdded: new Date()
+        //Write Change to DB
+        db.collection("users")
+          .doc(firebase.auth().currentUser.uid)
+          .update(this.$store.state.UserProfile)
+          .then(result => {})
+          .catch(err => {
+            console.log(err);
+          });
+      } catch (error) {
+        this.$notify({
+          group: "main",
+          type: "error",
+          title: "Please Login to Heart Articles 🤪"
         });
-        // this.$notify({
-        //   group: "main",
-        //   type: "success",
-        //   title: "Saved To Faves 💾"
-        // });
       }
-
-      //Write Change to DB
-      db.collection("users")
-        .doc(firebase.auth().currentUser.uid)
-        .update(this.$store.state.UserProfile)
-        .then(result => {})
-        .catch(err => {
-          console.log(err);
-        });
     },
     trimed: function(string, max) {
       if (string.length < max) {
@@ -147,7 +143,7 @@ export default {
 .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
   opacity: 0;
 }
-
+/* Fade in Image Transition  */
 .imageFade-enter-active {
   transition: opacity 2s ease-in-out;
 }
@@ -177,14 +173,14 @@ export default {
   padding-bottom: 8px !important;
   padding-top: 8px !important;
 }
-
+/* Limit Card Sizes  */
 .minny {
   max-width: 400px;
   min-width: 320px;
   max-height: 380px;
   min-height: 380px;
 }
-
+/* Center The Image Loading Spinner */
 .center-spinner {
   position: absolute;
   top: 50%;
