@@ -1,5 +1,5 @@
 <template >
-  <transition-group name="fade" tag="v-layout" v-show="mounted" class="manual-v-layout noClick" style="max-width: 1500px;margin: auto; ">
+  <transition-group name="slide-x-transition" tag="v-layout" v-show="mounted" class="manual-v-layout noClick" style="max-width: 1500px;margin: auto; ">
     <v-flex transition="fade" class="pa-4" v-for="(post, index) in this.$store.state.mainPosts" xs12 sm6 md4 xl4 :key="post.id" v-bind:data-index="index">
       <v-hover close-delay="0">
         <v-card slot-scope=" { hover }" :class="`elevation-${hover ? 12 : 2}`" class="minny mb-0 AllowClick" style="margin-left:auto;margin-right:auto; padding-bottom: 58px; ">
