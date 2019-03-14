@@ -18,7 +18,7 @@ const state = {
       description: "Description",
       categories: [],
       content: []
-    },
+    }
   },
   mainPosts: [],
   currentArticle: [],
@@ -35,6 +35,7 @@ const state = {
   applicationState: {
     online: true,
     loaded: false,
+    articlesLoaded: false,
     drawer: false,
     authenticated: false,
     loading: false,
@@ -50,6 +51,9 @@ const mutations = {
   ChangeAuthState(context, authState) {
     state.applicationState.authenticated = authState;
   },
+  ChangeToLoaded(context, loadedState) {
+    state.applicationState.articlesLoaded = loadedState;
+  },
   setLoaded(context, loadedState) {
     state.applicationState.loaded = loadedState;
   },
@@ -57,17 +61,15 @@ const mutations = {
 };
 
 const actions = {
-  pushNotification: function ({
-    commit
-  }, state) {
-    console.log(state);
-    this.state.applicationState.notificationQueue.push(state);
-  },
-  //
   authUpdate: function ({
     commit
   }, state) {
     commit("ChangeAuthState", state);
+  },
+  loadedChange: function ({
+    commit
+  }, state) {
+    commit("ChangeToLoaded", state);
   },
 
   createNewPost: function ({

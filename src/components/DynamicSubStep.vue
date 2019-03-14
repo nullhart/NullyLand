@@ -1,8 +1,12 @@
 
 
 <template>
-  <div style="max-width: 800px;">
-    <component v-bind:is="data.type" :data="data" class="mb-3"></component>
+  <div style="max-width: 800px; ">
+    <component
+      :is="data.type"
+      :data="data"
+      class="mb-3"
+    ></component>
   </div>
 </template>
 

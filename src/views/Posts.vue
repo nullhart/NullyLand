@@ -1,22 +1,54 @@
 <template >
   <!-- <transition-group name="slide-x-transition" tag="v-layout" v-show="mounted" class="manual-v-layout noClick" style="max-width: 1500px;margin: auto; "> -->
   <v-layout class="manual-v-layout noClick" style="max-width: 1500px;margin: auto; ">
-
-    <v-flex class="text-xs-center" v-show="$store.state.mainPosts.length == 0 && loaded" key="noArticles">
-      <h1>No Articles 😥</h1>
+    <v-flex
+      class="text-xs-center"
+      v-show="$store.state.mainPosts.length == 0 && $store.state.applicationState.articlesLoaded"
+      key="noArticles"
+    >
+      <h1 v-show="() => wait()">No Articles 😥</h1>
     </v-flex>
 
-    <v-flex v-show="$store.state.mainPosts != []" transition="fade" class="pa-4" v-for="(post, index) in this.$store.state.mainPosts" xs12 sm6 md4 xl4 :key="post.id" v-bind:data-index="index">
+    <v-flex
+      v-show="$store.state.applicationState.articlesLoaded "
+      transition="fade"
+      class="pa-4"
+      v-for="(post, index) in this.$store.state.mainPosts"
+      xs12
+      sm6
+      md4
+      xl4
+      :key="post.id"
+      v-bind:data-index="index"
+    >
       <v-hover close-delay="0">
-        <v-card slot-scope=" { hover }" :class="`elevation-${hover ? 12 : 2}`" class="minny mb-0 AllowClick" style="margin-left:auto;margin-right:auto; padding-bottom: 58px; ">
+        <v-card
+          slot-scope=" { hover }"
+          :class="`elevation-${hover ? 12 : 2}`"
+          class="minny mb-0 AllowClick"
+          style="margin-left:auto;margin-right:auto; padding-bottom: 58px; "
+        >
           <v-responsive>
-            <v-img @click="goToArticle(post)" style="cursor: pointer;" :aspect-ratio="16/9" class="generalGradient" transition="imageFade" :src="post.thumbnail">
+            <v-img
+              alt="Article Thumbnail"
+              @click="goToArticle(post)"
+              style="cursor: pointer;"
+              :aspect-ratio="16/9"
+              class="generalGradient"
+              transition="imageFade"
+              :src="post.thumbnail"
+            >
               <v-layout slot="placeholder" fill-height align-center justify-center ma-0>
-                <v-progress-circular class="" indeterminate color="yellow"></v-progress-circular>
+                <v-progress-circular class indeterminate color="yellow"></v-progress-circular>
               </v-layout>
             </v-img>
           </v-responsive>
-          <v-card-title class="pa-2 " style="font-size: 100%; " @click="goToArticle(post)" primary-title>
+          <v-card-title
+            class="pa-2"
+            style="font-size: 100%; "
+            @click="goToArticle(post)"
+            primary-title
+          >
             <v-flex>
               <div class="headline text-xs-center">{{post.title}}</div>
               <div class="grey--text">{{trimed(post.description,175)}}</div>
@@ -37,7 +69,6 @@
     </v-flex>
   </v-layout>
   <!-- </transition-group> -->
-
 </template>
 
 
@@ -58,8 +89,8 @@ export default {
   },
 
   mounted() {
-    window.scrollTo(0, 0);
     this.$nextTick().then(data => {
+      window.scrollTo(0, 0);
       this.mounted = true;
       setTimeout(() => {
         this.loaded = true;

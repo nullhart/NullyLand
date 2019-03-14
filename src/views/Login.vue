@@ -1,40 +1,66 @@
 
 <template >
   <div>
-    <transition name="fade" mode="out-in">
-      <v-form key="0" class='login elevation-24 white' v-if="$store.state.applicationState.login.modal == 'Login'">
-        <v-flex class="error" style="width: 5px;">
-          <h2 class="error--text" style="position: relative; left: 20px;">Login</h2>
+    <transition
+      name="fade"
+      mode="out-in"
+    >
+      <v-form
+        key="0"
+        class='login elevation-24 white'
+        v-if="$store.state.applicationState.login.modal == 'Login'"
+      >
+        <v-flex
+          class="error"
+          style="width: 5px;"
+        >
+          <h2
+            class="error--text"
+            style="position: relative; left: 20px;"
+          >Login</h2>
         </v-flex>
         <v-container style="height: 100%;">
           <v-flex xs12>
-            <v-text-field validate-on-blur v-model="email" :rules="[rules.required, rules.email]" label="E-mail"></v-text-field>
+            <v-text-field
+              validate-on-blur
+              v-model="email"
+              :rules="[rules.required, rules.email]"
+              label="E-mail"
+            ></v-text-field>
           </v-flex>
           <v-flex xs12>
-            <v-text-field @keyup.enter="login" validate-on-blur v-model="password" :append-icon="showPass ? 'visibility_off' : 'visibility'" :rules="[rules.required, rules.min]" :type="showPass ? 'text' : 'password'" label="Password" hint="At least 8 characters" counter @click:append="showPass = !showPass"></v-text-field>
+            <v-text-field
+              @keyup.enter="login"
+              validate-on-blur
+              v-model="password"
+              :append-icon="showPass ? 'visibility_off' : 'visibility'"
+              :rules="[rules.required, rules.min]"
+              :type="showPass ? 'text' : 'password'"
+              label="Password"
+              hint="At least 8 characters"
+              counter
+              @click:append="showPass = !showPass"
+            ></v-text-field>
           </v-flex>
           <v-flex class="loginButton">
-            <v-btn round class="elevation-6 white--text font-weight-bold" large :loading="LoginProgress" @click="login">Login</v-btn>
-            <v-btn round class=" red elevation-6 white--text font-weight-bold" large :loading="RegisterProgress" @click="register">Register</v-btn>
+            <v-btn
+              round
+              class="elevation-6 white--text font-weight-bold"
+              large
+              :loading="LoginProgress"
+              @click="login"
+            >Login</v-btn>
+            <v-btn
+              round
+              class=" red elevation-6 white--text font-weight-bold"
+              large
+              :loading="RegisterProgress"
+              @click="register"
+            >Register</v-btn>
           </v-flex>
         </v-container>
       </v-form>
-      <!-- <v-form key="1" class='login elevation-24 white' v-if="$store.state.applicationState.login.modal == 'Sign Up'">
-        <v-flex class="error" style="width: 5px;">
-          <h2 class="error--text" style="position: relative; left: 20px; width: 300px;">Sign Up</h2>
-        </v-flex>
-        <v-container style="height: 100%;">
-          <v-flex xs12>
-            <v-text-field validate-on-blur v-model="registerEmail" :rules="[rules.required, rules.email]" label="E-mail"></v-text-field>
-          </v-flex>
-          <v-flex xs12>
-            <v-text-field @keyup.enter="register" validate-on-blur v-model="registerPassword" :append-icon="showPass ? 'visibility_off' : 'visibility'" :rules="[rules.required, rules.min]" :type="showPass ? 'text' : 'password'" label="Password" hint="At least 8 characters" counter @click:append="showPass = !showPass"></v-text-field>
-          </v-flex>
-          <v-flex class="loginButton">
-            <v-btn round class="elevation-6 white--text font-weight-bold" large :loading="RegisterProgress" @click="register">Sign Up</v-btn>
-          </v-flex>
-        </v-container>
-      </v-form> -->
+
     </transition>
 
   </div>

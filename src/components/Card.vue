@@ -1,14 +1,33 @@
 
 
 <template>
-  <v-card class="elevation-3 post-image" style="margin-left:auto;margin-right:auto;">
+  <v-card
+    class="elevation-3 post-image"
+    style="margin-left:auto;margin-right:auto;"
+  >
     <v-card-text class="plum-gradient  elevation-0 white--text mb-0">
       <p class="title font-weight-bold mb-0 text-xs-center">{{data.title}}</p>
     </v-card-text>
     <v-responsive class="orange">
-      <v-img transition="imageFade" :aspect-ratio="16/9" :src="data.image.downloadUrl">
-        <v-layout slot="placeholder" fill-height align-center justify-center ma-0>
-          <v-progress-circular :size="49" :width="6" indeterminate color="yellow"></v-progress-circular>
+      <v-img
+        alt="Main Card Image"
+        transition="imageFade"
+        :aspect-ratio="16/9"
+        :src="data.image.downloadUrl"
+      >
+        <v-layout
+          slot="placeholder"
+          fill-height
+          align-center
+          justify-center
+          ma-0
+        >
+          <v-progress-circular
+            :size="49"
+            :width="6"
+            indeterminate
+            color="yellow"
+          ></v-progress-circular>
         </v-layout>
       </v-img>
 

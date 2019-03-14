@@ -1,9 +1,18 @@
 <template>
-
   <div class="noClick">
-
     <v-tooltip left class="AllowClick">
-      <v-btn slot="activator" @click="dialog = !dialog" class="text-xs-center mb-4" fixed right bottom fab dark large color="orange lighten-1">
+      <v-btn
+        slot="activator"
+        @click="dialog = !dialog"
+        class="text-xs-center mb-4"
+        fixed
+        right
+        bottom
+        fab
+        dark
+        large
+        color="orange lighten-1"
+      >
         <v-icon dark>mdi-plus</v-icon>
       </v-btn>
       <span>Add Element</span>
@@ -19,7 +28,16 @@
             <v-container grid-list-xs>
               <v-layout wrap>
                 <v-flex xs12>
-                  <v-select outline v-model="newItemType" :items="postElementTypes" item-text="title" item-value="value" return-object required label="Element Type" required></v-select>
+                  <v-select
+                    outline
+                    v-model="newItemType"
+                    :items="postElementTypes"
+                    item-text="title"
+                    item-value="value"
+                    return-object
+                    required
+                    label="Element Type"
+                  ></v-select>
                 </v-flex>
                 <v-flex xs12>
                   <v-text-field outline v-model="newItemTitle" label="Element Title"></v-text-field>
@@ -36,7 +54,12 @@
                   <v-text-field outline v-model="newItemLanguage" label="Code Snippit Language"></v-text-field>
                 </v-flex>
                 <v-flex xs12 v-show="newItemType.value == 'snippit'">
-                  <v-textarea :auto-grow="true" outline v-model="newItemCode" label="Element Code Snippet"></v-textarea>
+                  <v-textarea
+                    :auto-grow="true"
+                    outline
+                    v-model="newItemCode"
+                    label="Element Code Snippet"
+                  ></v-textarea>
                 </v-flex>
 
                 <v-flex xs12>
@@ -44,11 +67,18 @@
                   <v-divider class="mb-1 mt-2"></v-divider>
                   <v-responsive class="elevation-3" v-if="newItemType.value == 'card'">
                     <transition name="fade">
-                      <v-img :src="newItemImage" v-model="newItemImage"> <input style="width: 435px; height: 250px; highlight: none; opacity: 0;" @change="onChange($event)" type="file" accept="image/*" id="image"></v-img>
+                      <v-img :src="newItemImage" v-model="newItemImage">
+                        <input
+                          style="width: 435px; height: 250px; highlight: none; opacity: 0;"
+                          @change="onChange($event)"
+                          type="file"
+                          accept="image/*"
+                          id="image"
+                        >
+                      </v-img>
                     </transition>
                   </v-responsive>
                 </v-flex>
-
               </v-layout>
             </v-container>
           </v-card-text>
@@ -61,10 +91,20 @@
       </v-dialog>
     </v-layout>
     <div class="AllowClick sideToolbar">
-      <v-btn color="green darken-1 white--text font-weight-bold" icon large @click.native="publishArticle">
+      <v-btn
+        color="green darken-1 white--text font-weight-bold"
+        icon
+        large
+        @click.native="publishArticle"
+      >
         <v-icon>mdi-earth</v-icon>
       </v-btn>
-      <v-btn color="yellow darken-1 white--text font-weight-bold" icon large @click.native="saveDraft">
+      <v-btn
+        color="yellow darken-1 white--text font-weight-bold"
+        icon
+        large
+        @click.native="saveDraft"
+      >
         <v-icon>save</v-icon>
       </v-btn>
     </div>
@@ -80,27 +120,62 @@
         <v-card class="elevation-3">
           <div class="text-xs-center">
             <div>
-              <input style="width: 100%" class="text-xs-center AllowClick font-weight-bold display-1" v-model="$store.state.newPost.title">
+              <input
+                style="width: 100%"
+                class="text-xs-center AllowClick font-weight-bold display-1"
+                v-model="$store.state.newPost.title"
+              >
             </div>
-            <textarea style="width:100%; height: 100px;" class="text-xs-center AllowClick font-weight-normal " v-model="$store.state.newPost.description"></textarea>
+            <textarea
+              style="width:100%; height: 100px;"
+              class="text-xs-center AllowClick font-weight-normal"
+              v-model="$store.state.newPost.description"
+            ></textarea>
             <v-flex>
-              <v-select style="padding: 30px;" class="AllowClick" v-model="newItemTags" :items="tags" chips label="Chips" multiple></v-select>
+              <v-select
+                style="padding: 30px;"
+                class="AllowClick"
+                v-model="newItemTags"
+                :items="tags"
+                chips
+                label="Chips"
+                multiple
+              ></v-select>
             </v-flex>
             <v-flex xs6 style="margin: auto; cursor: pointer;">
-              <v-img xs2 :src="articleThumbnail" v-model="articleThumbnail"> <input class="AllowClick " style="width: 100%; height: 100%; highlight: none; opacity: 0; " @change="uploadThumbnail($event)" type="file" accept="image/*" id="image"></v-img>
+              <v-img xs2 :src="articleThumbnail" v-model="articleThumbnail">
+                <input
+                  class="AllowClick"
+                  style="width: 100%; height: 100%; highlight: none; opacity: 0; "
+                  @change="uploadThumbnail($event)"
+                  type="file"
+                  accept="image/*"
+                  id="image"
+                >
+              </v-img>
             </v-flex>
           </div>
         </v-card>
       </v-flex>
       <v-divider class="ma-2"></v-divider>
       <div>
-        <div @click.right="changeSelectedElement(i)" v-for="(things, i) in $store.state.newPost.content" :key="i" style="perspective: 600px;">
-          <dynamic-sub-step slot="activator" style="margin: auto;" :data="things" class="AllowClick" :style="'animation-delay: ' + 300 * i + 'ms !important; will-change: auto; '" v-show="content " />
+        <div
+          @click.right="changeSelectedElement(i)"
+          v-for="(things, i) in $store.state.newPost.content"
+          :key="i"
+          style="perspective: 600px;"
+        >
+          <dynamic-sub-step
+            slot="activator"
+            style="margin: auto;"
+            :data="things"
+            class="AllowClick"
+            :style="'animation-delay: ' + 300 * i + 'ms !important; will-change: auto; '"
+            v-show="content "
+          />
         </div>
       </div>
-
     </v-container>
-
   </div>
 </template>
 
@@ -112,7 +187,6 @@ import "firebase/storage";
 import db from "../helpers/firebaseInit";
 
 import imageUploader from "../helpers/imageUploader.js";
-import { rejects } from "assert";
 
 const articlesRef = db.collection("articles");
 const articlesCountRef = db.collection("articleCounter").doc("totalArticles");

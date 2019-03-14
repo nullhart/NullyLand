@@ -1,47 +1,63 @@
 <template>
   <v-app id="main" light>
-    <notifications style="margin-top: 70px;" group="main" classes="notification" />
-    <v-navigation-drawer class="hide-overflow" width="200" :permanent="!mobile" v-model="$store.state.applicationState.drawer" light fixed clipped app>
+    <notifications style="margin-top: 70px;" group="main" classes="notification"/>
+    <v-navigation-drawer
+      class="hide-overflow"
+      width="200"
+      :permanent="!mobile"
+      v-model="$store.state.applicationState.drawer"
+      light
+      fixed
+      clipped
+      app
+    >
       <div class="triangle-up elevation-10"></div>
       <v-card height="240" flat>
         <v-avatar class="center" size="100" style="z-index: 1;">
           <transition name="fade1">
-            <img class="mt-5" v-show="profileImageLoaded" v-on:load="profileImageUpdate" :src="$store.state.UserProfile.profileImage">
+            <img
+              alt="Profile Image"
+              class="mt-5"
+              v-show="profileImageLoaded"
+              v-on:load="profileImageUpdate"
+              :src="$store.state.UserProfile.profileImage"
+            >
           </transition>
         </v-avatar>
       </v-card>
       <v-divider style="position: relative; top: -400px;"></v-divider>
       <v-list style="position: relative; top: -400px;">
-
         <v-list-tile :ripple="{class: 'orange--text'}" @click="mainArticles">
           <v-list-tile-action>
             <v-icon>mdi-book-open</v-icon>
           </v-list-tile-action>
           <v-list-tile-content>
-            <v-list-tile-title>
-              Articles
-            </v-list-tile-title>
+            <v-list-tile-title>Articles</v-list-tile-title>
           </v-list-tile-content>
         </v-list-tile>
 
-        <v-list-tile v-show="this.$store.state.UserProfile.admin" :ripple="{class: 'orange--text'}" @click="$router.push('/postcreator')">
+        <v-list-tile
+          v-show="this.$store.state.UserProfile.admin"
+          :ripple="{class: 'orange--text'}"
+          @click="$router.push('/postcreator')"
+        >
           <v-list-tile-action>
             <v-icon>create</v-icon>
           </v-list-tile-action>
           <v-list-tile-content>
-            <v-list-tile-title>
-              Create Post
-            </v-list-tile-title>
+            <v-list-tile-title>Create Post</v-list-tile-title>
           </v-list-tile-content>
         </v-list-tile>
-        <v-list-tile v-show=" Object.keys(this.$store.state.UserProfile).length !== 0" :ripple="{class: 'orange--text'}" @click="favedArticles">
+        <v-list-tile
+          v-show=" Object.keys(this.$store.state.UserProfile).length !== 0"
+          :ripple="{class: 'orange--text'}"
+          @click="favedArticles"
+        >
           <v-list-tile-action>
             <v-icon>mdi-heart</v-icon>
           </v-list-tile-action>
           <v-list-tile-content>
-            <v-list-tile-title>
-              Saved
-            </v-list-tile-title>
+            <v-list-tile-title>Saved</v-list-tile-title>
           </v-list-tile-content>
         </v-list-tile>
         <v-list-tile :ripple="{class: 'orange--text'}" @click="$router.push('profile')">
@@ -49,18 +65,26 @@
             <v-icon>account_box</v-icon>
           </v-list-tile-action>
           <v-list-tile-content>
-            <v-list-tile-title>
-              My Profile
-            </v-list-tile-title>
+            <v-list-tile-title>My Profile</v-list-tile-title>
           </v-list-tile-content>
         </v-list-tile>
       </v-list>
     </v-navigation-drawer>
     <!--ToolBar -->
     <v-toolbar class="navGradient elevation-0" dark fixed clipped-left app>
-      <v-toolbar-side-icon @click.stop="$store.state.applicationState.drawer = !$store.state.applicationState.drawer"></v-toolbar-side-icon>
+      <v-toolbar-side-icon
+        @click.stop="$store.state.applicationState.drawer = !$store.state.applicationState.drawer"
+      ></v-toolbar-side-icon>
       <transition name="fade">
-        <img @click="mainArticles" v-on:load="logoLoadedUpdate" v-show="logoLoaded" style="cursor: pointer;" width="200" src="./assets/ss.png">
+        <img
+          alt="logo"
+          @click="mainArticles"
+          v-on:load="logoLoadedUpdate"
+          v-show="logoLoaded"
+          style="cursor: pointer;"
+          width="200"
+          src="./assets/ss.png"
+        >
       </transition>
       <v-spacer></v-spacer>
       <v-menu offset-y>
@@ -79,28 +103,52 @@
           </v-list-tile>
         </v-list>
       </v-menu>
-
     </v-toolbar>
     <!--Router-View -->
-
     <v-content>
-
-      <vue-particles class="particles" key="part" color="#fe5f55" :particleOpacity="0.7" linesColor="#FFAB91" :particlesNumber="30" shapeType="circle" :particleSize="5" :linesWidth="2" :lineLinked="true" :lineOpacity="0.4" :linesDistance="150" :moveSpeed="3" :hoverEffect="true" hoverMode="grab" :clickEffect="true" clickMode="push">
-      </vue-particles>
+      <vue-particles
+        v-if="$store.state.applicationState.articlesLoaded && mounted"
+        class="particles"
+        key="part"
+        color="#fe5f55"
+        :particleOpacity="0.7"
+        linesColor="#FFAB91"
+        :particlesNumber="30"
+        shapeType="circle"
+        :particleSize="5"
+        :linesWidth="2"
+        :lineLinked="true"
+        :lineOpacity="0.4"
+        :linesDistance="150"
+        :moveSpeed="3"
+        :hoverEffect="true"
+        hoverMode="grab"
+        :clickEffect="true"
+        clickMode="push"
+      ></vue-particles>
       <transition name="slide-x-transition" mode="out-in">
         <router-view style="position: relative; top: 0px;" key="router"></router-view>
-
       </transition>
       <div v-if="this.$route.name == 'posts' " style="display: flex; justify-content: center;">
-        <v-btn v-show="this.$store.state.lastVisibleEnd" icon fab class=" white--text more-Button" @click="moreArticles">
+        <v-btn
+          v-show="this.$store.state.lastVisibleEnd"
+          icon
+          fab
+          class="white--text more-Button"
+          @click="moreArticles"
+        >
           <v-icon>mdi-arrow-down-bold</v-icon>
         </v-btn>
       </div>
     </v-content>
     <!--Footer -->
-
     <transition name="rollUp">
-      <v-footer key="footer" v-show="!$store.state.applicationState.online" :app="!$store.state.applicationState.online" :class="{red: !$store.state.applicationState.online, white: $store.state.applicationState.online}">
+      <v-footer
+        key="footer"
+        v-show="!$store.state.applicationState.online"
+        :app="!$store.state.applicationState.online"
+        :class="{red: !$store.state.applicationState.online, white: $store.state.applicationState.online}"
+      >
         <v-container fluid class="ma-2 pa-0 text-xs-center">
           <span v-show="$store.state.applicationState.online">
             <v-icon>mdi-network</v-icon>
@@ -111,7 +159,6 @@
         </v-container>
       </v-footer>
     </transition>
-
   </v-app>
 </template>
 <style lang="scss">
@@ -246,6 +293,7 @@ export default {
       page: 1,
       newData: [],
       profileImageLoaded: false,
+      loaded: false,
       logoLoaded: false,
       mounted: false,
       references: this.$store.state.lastVisibleEnd
@@ -365,17 +413,7 @@ export default {
   },
 
   mounted() {
-    this.$vuetify.breakpoint.sm = 1215;
     this.mounted = true;
-
-    window.addEventListener("online", () => {
-      console.log("Now Online");
-      this.$store.state.applicationState.online = true;
-    });
-    window.addEventListener("offline", () => {
-      console.log("Now Offline");
-      this.$store.state.applicationState.online = false;
-    });
     db.collection("articles")
       .orderBy("dateCreated")
       .limit(6)
@@ -388,7 +426,19 @@ export default {
         documentSnapshots.forEach(doc => articles.push(doc.data()));
 
         this.$store.state.mainPosts = articles;
+        this.$store.dispatch("loadedChange", true);
       });
+    this.$vuetify.breakpoint.sm = 1215;
+    this.mounted = true;
+
+    window.addEventListener("online", () => {
+      console.log("Now Online");
+      this.$store.state.applicationState.online = true;
+    });
+    window.addEventListener("offline", () => {
+      console.log("Now Offline");
+      this.$store.state.applicationState.online = false;
+    });
   }
 };
 </script>
