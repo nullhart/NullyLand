@@ -1,11 +1,8 @@
 
 
 <template>
-  <v-card
-    class="elevation-3 post-image"
-    style="margin-left:auto;margin-right:auto;"
-  >
-    <v-card-text class="plum-gradient  elevation-0 white--text mb-0">
+  <v-card class="elevation-3 post-image" style="margin-left:auto;margin-right:auto;">
+    <v-card-text class="plum-gradient elevation-0 white--text mb-0">
       <p class="title font-weight-bold mb-0 text-xs-center">{{data.title}}</p>
     </v-card-text>
     <v-responsive class="orange">
@@ -15,19 +12,8 @@
         :aspect-ratio="16/9"
         :src="data.image.downloadUrl"
       >
-        <v-layout
-          slot="placeholder"
-          fill-height
-          align-center
-          justify-center
-          ma-0
-        >
-          <v-progress-circular
-            :size="49"
-            :width="6"
-            indeterminate
-            color="yellow"
-          ></v-progress-circular>
+        <v-layout slot="placeholder" fill-height align-center justify-center ma-0>
+          <v-progress-circular :size="49" :width="6" indeterminate color="yellow"></v-progress-circular>
         </v-layout>
       </v-img>
 
@@ -80,7 +66,7 @@ export default {
 
 <style >
 .plum-gradient {
-  background: linear-gradient(0.45turn, #667eea, #764ba2);
+  background: linear-gradient(0.9turn, #f3d250, #fe5f55);
 }
 .imageFade-enter-active {
   transition: opacity 1s ease-in-out;

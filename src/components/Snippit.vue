@@ -1,14 +1,8 @@
 <template>
   <div style="margin-left:auto;margin-right:auto; max-width: 800px; position: relative;">
-
     <v-card class="elevation-3 ma-0">
-      <v-card-text
-        style="background-color: #272822"
-        class=" elevation-4 white--text mb-0"
-      >
-        <h1 class=" mb-0 pr-4 pl-4 text-xs-center title font-weight-bold">
-          {{data.title}}
-        </h1>
+      <v-card-text style="background-color: #272822" class="elevation-4 white--text mb-0">
+        <h1 class="mb-0 pr-4 pl-4 text-xs-center title font-weight-bold">{{data.title}}</h1>
 
         <v-btn
           @click="copyToClipboard(code,$event)"
@@ -19,7 +13,6 @@
         >
           <v-icon>mdi-content-copy</v-icon>
         </v-btn>
-
       </v-card-text>
       <prism
         class="ma-0"
