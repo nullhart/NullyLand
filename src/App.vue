@@ -1,6 +1,6 @@
 <template>
   <v-app id="main" light>
-    <notifications style="margin-top: 70px;" group="main" classes="notification"/>
+    <notifications style="margin-top: 70px;" group="main" classes="notification" />
     <v-navigation-drawer
       class="hide-overflow"
       width="200"
@@ -21,7 +21,7 @@
               v-show="profileImageLoaded"
               v-on:load="profileImageUpdate"
               :src="$store.state.UserProfile.profileImage"
-            >
+            />
           </transition>
         </v-avatar>
       </v-card>
@@ -84,7 +84,7 @@
           style="cursor: pointer;"
           width="200"
           src="./assets/ss.png"
-        >
+        />
       </transition>
       <v-spacer></v-spacer>
       <v-menu offset-y>
@@ -415,7 +415,7 @@ export default {
   mounted() {
     this.mounted = true;
     db.collection("articles")
-      .orderBy("dateCreated")
+      .orderBy("dateCreated", "desc")
       .limit(6)
       .get()
       .then(documentSnapshots => {
@@ -423,8 +423,12 @@ export default {
         this.$store.state.lastVisibleEnd = documentSnapshots.docs[6 - 1];
 
         var articles = [];
-        documentSnapshots.forEach(doc => articles.push(doc.data()));
+        documentSnapshots.forEach(doc => {
+          console.log(doc.data());
+          articles.push(doc.data());
+        });
 
+        console.log(articles);
         this.$store.state.mainPosts = articles;
         this.$store.dispatch("loadedChange", true);
       });
